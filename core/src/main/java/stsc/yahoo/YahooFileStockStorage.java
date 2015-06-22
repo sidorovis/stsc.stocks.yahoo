@@ -74,7 +74,7 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 	}
 
 	private void loadFilteredDatafeed() {
-		UnitedFormatStock.loadStockList(settings.getFilteredDataFolder(), settings.getTaskQueue());
+		UnitedFormatStock.loadStockList(settings.getFilteredDataFolder(), settings.getFilesystemStockNamesQueue());
 	}
 
 	private void loadStocks() throws ClassNotFoundException, IOException {
@@ -107,10 +107,10 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 
 	@Override
 	public void newStock(Stock newStock) {
-		datafeed.put(newStock.getName(), new StockLock(newStock));
+		datafeed.put(newStock.getInstrumentName(), new StockLock(newStock));
 	}
 
 	public Queue<String> getTasks() {
-		return settings.getTaskQueue();
+		return settings.getFilesystemStockNamesQueue();
 	}
 }

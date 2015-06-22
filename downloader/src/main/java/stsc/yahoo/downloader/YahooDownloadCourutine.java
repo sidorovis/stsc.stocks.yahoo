@@ -25,8 +25,8 @@ public final class YahooDownloadCourutine {
 
 	private volatile boolean stopped = false;
 
-	public YahooDownloadCourutine(DownloaderLogger logger, boolean downloadExisted, YahooSettings settings, boolean downloadByPattern,
-			String startPattern, String endPattern, int stockNameMinLength, int stockNameMaxLength, int downloadThreadSize) {
+	public YahooDownloadCourutine(DownloaderLogger logger, boolean downloadExisted, YahooSettings settings, boolean downloadByPattern, String startPattern,
+			String endPattern, int stockNameMinLength, int stockNameMaxLength, int downloadThreadSize) {
 		this.logger = logger;
 		this.downloadExisted = downloadExisted;
 		this.settings = settings;
@@ -43,7 +43,7 @@ public final class YahooDownloadCourutine {
 	public void start() throws InterruptedException {
 		logger.log().trace("starting");
 		if (downloadExisted) {
-			UnitedFormatStock.loadStockList(settings.getDataFolder(), settings.getTaskQueue());
+			UnitedFormatStock.loadStockList(settings.getDataFolder(), settings.getFilesystemStockNamesQueue());
 		} else {
 			if (downloadByPattern) {
 				String pattern = startPattern;
@@ -90,6 +90,14 @@ public final class YahooDownloadCourutine {
 	private void generateTasks(int taskLength) {
 		char[] generatedText = new char[taskLength];
 		generateNextElement(generatedText, 0, taskLength);
+		if (taskLength > 1) {
+			generatedText[0] = '^';
+			generateNextElement(generatedText, 1, taskLength);
+			generatedText[0] = '.';
+			generateNextElement(generatedText, 1, taskLength);
+			generatedText[0] = '$';
+			generateNextElement(generatedText, 1, taskLength);
+		}
 	}
 
 	public void stop() throws Exception {

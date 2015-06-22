@@ -10,7 +10,7 @@ import stsc.common.stocks.UnitedFormatStock;
 
 public class YahooSettings {
 
-	private final ConcurrentLinkedQueue<String> taskQueue = new ConcurrentLinkedQueue<String>();
+	private final ConcurrentLinkedQueue<String> filesystemStockNamesForLoadQueue = new ConcurrentLinkedQueue<String>();
 	private String dataFolder = "./data/";
 	private String filteredDataFolder = "./filtered_data/";
 
@@ -29,26 +29,31 @@ public class YahooSettings {
 	}
 
 	public int taskQueueSize() {
-		return taskQueue.size();
+		return filesystemStockNamesForLoadQueue.size();
 	}
 
 	public YahooSettings addTask(String s) {
-		taskQueue.add(s);
+		filesystemStockNamesForLoadQueue.add(s);
 		return this;
 	}
 
-	public String getTask() {
-		return taskQueue.poll();
+	/**
+	 * into file system format for example: "_094FTSE"
+	 * 
+	 * @return
+	 */
+	public String getFilesystemStockName() {
+		return filesystemStockNamesForLoadQueue.poll();
 	}
 
-	public String generateUniteFormatPath(String stockName) {
-		return UnitedFormatStock.generatePath(dataFolder, stockName);
+	public String generateUniteFormatPath(String filesystemName) {
+		return UnitedFormatStock.generatePath(dataFolder, filesystemName);
 	}
 
-	public Optional<UnitedFormatStock> getStockFromFileSystem(String stockName) {
+	public Optional<UnitedFormatStock> getStockFromFileSystem(String filesystemName) {
 		UnitedFormatStock s = null;
 		try {
-			s = UnitedFormatStock.readFromUniteFormatFile(generateUniteFormatPath(stockName));
+			s = UnitedFormatStock.readFromUniteFormatFile(generateUniteFormatPath(filesystemName));
 		} catch (Exception e) {
 		}
 		return Optional.ofNullable(s);
@@ -62,8 +67,8 @@ public class YahooSettings {
 		return filteredDataFolder;
 	}
 
-	public Queue<String> getTaskQueue() {
-		return taskQueue;
+	public Queue<String> getFilesystemStockNamesQueue() {
+		return filesystemStockNamesForLoadQueue;
 	}
 
 }

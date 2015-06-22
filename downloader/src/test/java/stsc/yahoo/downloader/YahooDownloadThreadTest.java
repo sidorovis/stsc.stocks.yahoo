@@ -6,7 +6,9 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import stsc.common.service.statistics.DownloaderLogger;
 import stsc.common.stocks.Stock;
 import stsc.yahoo.YahooSettings;
 import stsc.yahoo.YahooUtils;
@@ -20,7 +22,7 @@ public class YahooDownloadThreadTest {
 		final YahooSettings settings = YahooUtils.createSettings("./test/", "./test/");
 		Files.copy(new File("./test_data/aaoi.uf"), new File("./test/aaoi.uf"));
 		settings.addTask("a");
-		DownloadYahooStockThread downloadThread = new DownloadYahooStockThread(settings, false);
+		DownloadYahooStockThread downloadThread = new DownloadYahooStockThread(Mockito.mock(DownloaderLogger.class), settings, false);
 		{
 			Thread th = new Thread(downloadThread);
 			th.start();
@@ -50,5 +52,23 @@ public class YahooDownloadThreadTest {
 		}
 		new File("./test/a.uf").delete();
 		new File("./test/aaoi.uf").delete();
+	}
+
+	@Test
+	public void testDownloadThreadForDiffenetInstrumentNameFilesystemName() throws InterruptedException, IOException, ClassNotFoundException {
+		final YahooSettings settings = YahooUtils.createSettings("./test/", "./test/");
+		settings.addTask("_094FTSE");
+		final DownloadYahooStockThread downloadThread = new DownloadYahooStockThread(Mockito.mock(DownloaderLogger.class), settings, false);
+		{
+			Thread th = new Thread(downloadThread);
+			th.start();
+			th.join();
+		}
+		{
+			final Optional<? extends Stock> s = settings.getStockFromFileSystem("_094FTSE");
+			Assert.assertTrue(s.isPresent());
+			Assert.assertEquals("^FTSE", s.get().getInstrumentName());
+		}
+		new File("./test/_094FTSE.uf").delete();
 	}
 }

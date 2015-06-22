@@ -32,20 +32,20 @@ class FilterThread implements Runnable {
 
 	@Override
 	public void run() {
-		String task = settings.getTask();
-		while (task != null) {
+		String filesystemStockName = settings.getFilesystemStockName();
+		while (filesystemStockName != null) {
 			try {
-				Optional<? extends Stock> s = settings.getStockFromFileSystem(task);
+				Optional<? extends Stock> s = settings.getStockFromFileSystem(filesystemStockName);
 				if (s.isPresent() && stockFilter.isLiquid(s.get()) && stockFilter.isValid(s.get())) {
-					YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), task);
-					logger.trace("stock " + task + " liquid");
+					YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), filesystemStockName);
+					logger.trace("stock " + filesystemStockName + " liquid");
 				} else {
-					deleteIfExisted(task);
+					deleteIfExisted(filesystemStockName);
 				}
 			} catch (IOException e) {
-				logger.trace("binary file " + task + " processing throw IOException: " + e.toString());
+				logger.trace("binary file " + filesystemStockName + " processing throw IOException: " + e.toString());
 			}
-			task = settings.getTask();
+			filesystemStockName = settings.getFilesystemStockName();
 		}
 	}
 

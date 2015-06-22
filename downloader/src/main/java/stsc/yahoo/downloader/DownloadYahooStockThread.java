@@ -28,63 +28,64 @@ class DownloadYahooStockThread implements Runnable {
 		this.stockFilter = new StockFilter();
 	}
 
-	DownloadYahooStockThread(YahooSettings settings, boolean deleteFilteredData) {
+	DownloadYahooStockThread(DownloaderLogger logger, YahooSettings settings, boolean deleteFilteredData) {
+		this.logger = logger;
 		this.settings = settings;
 		this.stockFilter = new StockFilter();
 		this.deleteFilteredData = deleteFilteredData;
 	}
 
 	public void run() {
-		String task = settings.getTask();
-		while (task != null) {
+		String filesystemStockName = settings.getFilesystemStockName();
+		while (filesystemStockName != null) {
 			try {
-				Optional<UnitedFormatStock> s = settings.getStockFromFileSystem(task);
+				Optional<UnitedFormatStock> s = settings.getStockFromFileSystem(filesystemStockName);
 				boolean downloaded = false;
 				if (!s.isPresent()) {
-					s = YahooDownloadHelper.download(task);
+					s = YahooDownloadHelper.download(filesystemStockName);
 					if (s.isPresent()) {
-						s.get().storeUniteFormat(getPath(settings.getDataFolder(), s.get().getName()));
+						s.get().storeUniteFormatToFolder(settings.getDataFolder());
 					}
 					downloaded = true;
-					logger.log(StatisticType.TRACE, "task fully downloaded: " + task);
+					logger.log(StatisticType.TRACE, "task fully downloaded: " + filesystemStockName);
 				} else {
-					downloaded = YahooDownloadHelper.partiallyDownload(s.get(), task);
+					downloaded = YahooDownloadHelper.partiallyDownload(s.get());
 					if (downloaded) {
-						s.get().storeUniteFormat(getPath(settings.getDataFolder(), s.get().getName()));
+						s.get().storeUniteFormatToFolder(settings.getDataFolder());
 					}
-					logger.log(StatisticType.TRACE, "task partially downloaded: " + task);
+					logger.log(StatisticType.TRACE, "task partially downloaded: " + filesystemStockName);
 				}
 				if (downloaded) {
 					final boolean filtered = stockFilter.isLiquid(s.get()) && stockFilter.isValid(s.get());
 					if (filtered) {
-						YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), task);
-						logger.log(StatisticType.INFO, "task is liquid and copied to filter stock directory: " + task);
+						YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), filesystemStockName);
+						logger.log(StatisticType.INFO, "task is liquid and copied to filter stock directory: " + filesystemStockName);
 					} else {
-						final boolean deleted = YahooDownloadHelper.deleteFilteredFile(deleteFilteredData,
-								settings.getFilteredDataFolder(), task);
+						final boolean deleted = YahooDownloadHelper.deleteFilteredFile(deleteFilteredData, settings.getFilteredDataFolder(),
+								filesystemStockName);
 						if (deleted) {
-							logger.log(StatisticType.DEBUG, "deleting filtered file with stock " + task
+							logger.log(StatisticType.DEBUG, "deleting filtered file with stock " + filesystemStockName
 									+ " it doesn't pass new liquidity filter tests");
 						}
 					}
 				} else {
-					logger.log(StatisticType.INFO, "task is considered as downloaded: " + task);
+					logger.log(StatisticType.INFO, "task is considered as downloaded: " + filesystemStockName);
 				}
 			} catch (Exception e) {
-				logger.log(StatisticType.TRACE, "task " + task + " throwed an exception: " + e.toString());
-				File file = new File(getPath(settings.getDataFolder(), task));
+				logger.log(StatisticType.TRACE, "task " + filesystemStockName + " throwed an exception: " + e.toString());
+				File file = new File(getPath(settings.getDataFolder(), filesystemStockName));
 				if (file.length() == 0)
 					file.delete();
 			}
 			synchronized (settings) {
 				solvedAmount += 1;
 				if (solvedAmount % printEach == 0)
-					logger.log().info("solved {} tasks last stock name {}", solvedAmount, task);
+					logger.log().info("solved {} tasks last stock name {}", solvedAmount, filesystemStockName);
 			}
 			if (stopped) {
 				break;
 			}
-			task = settings.getTask();
+			filesystemStockName = settings.getFilesystemStockName();
 		}
 	}
 

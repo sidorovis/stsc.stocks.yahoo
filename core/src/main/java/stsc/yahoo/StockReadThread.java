@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import stsc.common.stocks.Stock;
+import stsc.common.stocks.UnitedFormatStock;
 
 class StockReadThread implements Runnable {
 
@@ -26,13 +27,14 @@ class StockReadThread implements Runnable {
 
 	@Override
 	public void run() {
-		String task = settings.getTask();
+		String task = settings.getFilesystemStockName();
 		while (task != null) {
 			final Optional<? extends Stock> s = settings.getStockFromFileSystem(task);
+			task = UnitedFormatStock.fromFilesystem(task);
 			if (s.isPresent()) {
 				updateReceivers(s.get());
 			}
-			task = settings.getTask();
+			task = settings.getFilesystemStockName();
 		}
 	}
 

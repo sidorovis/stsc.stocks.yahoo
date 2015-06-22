@@ -12,9 +12,9 @@ public class YahooUtils {
 	private YahooUtils() {
 	}
 
-	public static void copyFilteredStockFile(String dataFolder, String filteredDataFolder, String stockName) throws IOException {
-		final File originalFile = new File(UnitedFormatStock.generatePath(dataFolder, stockName));
-		final File filteredFile = new File(UnitedFormatStock.generatePath(filteredDataFolder, stockName));
+	public static void copyFilteredStockFile(String dataFolder, String filteredDataFolder, String filesystemName) throws IOException {
+		final File originalFile = new File(UnitedFormatStock.generatePath(dataFolder, filesystemName));
+		final File filteredFile = new File(UnitedFormatStock.generatePath(filteredDataFolder, filesystemName));
 		if (filteredFile.exists() && originalFile.exists() && filteredFile.length() == originalFile.length()) {
 			// filteter file exists and have the same size, so do nothing
 		} else

@@ -40,7 +40,7 @@ final class DownloadedStockFilter {
 
 		logger.trace("downloaded stock filter started");
 		settings = YahooUtils.createSettings();
-		UnitedFormatStock.loadStockList(settings.getDataFolder(), settings.getTaskQueue());
+		UnitedFormatStock.loadStockList(settings.getDataFolder(), settings.getFilesystemStockNamesQueue());
 		logger.trace("collected stock names to start filter process: {}", settings.taskQueueSize());
 
 		List<Thread> threads = new ArrayList<Thread>();

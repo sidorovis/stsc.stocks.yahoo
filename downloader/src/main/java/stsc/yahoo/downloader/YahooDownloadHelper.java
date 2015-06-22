@@ -16,15 +16,16 @@ public final class YahooDownloadHelper {
 	private static final int waitTriesAmount = 5;
 	private static final int waitTimeBetweenTries = 500;
 
-	public static final Optional<UnitedFormatStock> download(String stockName) throws InterruptedException {
+	public static final Optional<UnitedFormatStock> download(String filesystemStockName) throws InterruptedException {
 		int tries = 0;
 		String error = "";
 		UnitedFormatStock newStock = null;
 		while (tries < waitTriesAmount) {
 			try {
-				final URL url = new URL("http://ichart.finance.yahoo.com/table.csv?s=" + stockName);
+				final String instrumentName = UnitedFormatStock.fromFilesystem(filesystemStockName);
+				final URL url = new URL("http://ichart.finance.yahoo.com/table.csv?s=" + instrumentName);
 				final String stockContent = CharStreams.toString(new InputStreamReader(url.openStream()));
-				newStock = UnitedFormatStock.newFromString(stockName, stockContent);
+				newStock = UnitedFormatStock.newFromString(instrumentName, stockContent);
 				if (newStock.getDays().isEmpty())
 					return Optional.empty();
 				return Optional.of(newStock);
@@ -34,10 +35,10 @@ public final class YahooDownloadHelper {
 			tries += 1;
 			Thread.sleep(waitTimeBetweenTries);
 		}
-		throw new InterruptedException(waitTriesAmount + " tries not enought to download data on " + stockName + " stock. " + error);
+		throw new InterruptedException(waitTriesAmount + " tries not enought to download data on " + filesystemStockName + " stock. " + error);
 	}
 
-	public static final boolean partiallyDownload(UnitedFormatStock stock, String stockName) throws InterruptedException {
+	public static final boolean partiallyDownload(UnitedFormatStock stock) throws InterruptedException {
 		String downloadLink = stock.generatePartiallyDownloadLine();
 		if (downloadLink.isEmpty()) {
 			return false;
@@ -59,8 +60,7 @@ public final class YahooDownloadHelper {
 			tries += 1;
 			Thread.sleep(waitTimeBetweenTries);
 		}
-		throw new InterruptedException("" + waitTriesAmount + " tries not enought to partially download data on " + downloadLink
-				+ " stock " + error);
+		throw new InterruptedException("" + waitTriesAmount + " tries not enought to partially download data on " + downloadLink + " stock " + error);
 	}
 
 	public static boolean deleteFilteredFile(boolean deleteFilteredData, String filteredDataFolder, String stockName) {

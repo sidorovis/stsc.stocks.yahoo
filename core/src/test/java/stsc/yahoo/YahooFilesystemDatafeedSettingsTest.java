@@ -11,11 +11,11 @@ public class YahooFilesystemDatafeedSettingsTest {
 	@Test
 	public void testYahooFilesystemDatafeedSettings() throws IOException {
 		YahooSettings settings = new YahooSettings("./test/", "./test/");
-		Assert.assertEquals(settings.getTask(), null);
+		Assert.assertEquals(settings.getFilesystemStockName(), null);
 		settings.addTask("a");
 		Assert.assertEquals(1, settings.taskQueueSize());
-		Assert.assertEquals(settings.getTask(), "a");
-		Assert.assertEquals(settings.getTask(), null);
+		Assert.assertEquals(settings.getFilesystemStockName(), "a");
+		Assert.assertEquals(settings.getFilesystemStockName(), null);
 
 		Assert.assertEquals(new File("./test/asd.uf"), new File(settings.generateUniteFormatPath("asd")));
 	}

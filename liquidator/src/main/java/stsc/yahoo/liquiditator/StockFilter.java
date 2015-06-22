@@ -67,26 +67,26 @@ public class StockFilter {
 		int yearAgoIndex = s.findDayIndex(todayDate.plusYears(-1).toDate());
 		int daysWithDataForLastYear = days.size() - yearAgoIndex;
 		if (daysWithDataForLastYear < minimalDaysWithDataPerLastYear) {
-			logger.debug("stock " + s.getName() + " have only " + daysWithDataForLastYear + " days for last year");
-			errors += "stock " + s.getName() + " have only " + daysWithDataForLastYear + " days for last year\n";
+			logger.debug("stock " + s.getInstrumentName() + " have only " + daysWithDataForLastYear + " days for last year");
+			errors += "stock " + s.getInstrumentName() + " have only " + daysWithDataForLastYear + " days for last year\n";
 		}
 
 		int monthAgoIndex = s.findDayIndex(todayDate.plusMonths(-1).toDate());
 		int daysWithDataForLastMonth = days.size() - monthAgoIndex;
 		if (daysWithDataForLastMonth < minimalDaysWithDataPerLastMonth) {
-			logger.debug("stock " + s.getName() + " have only " + daysWithDataForLastMonth + " days for last month");
-			errors += "stock " + s.getName() + " have only " + daysWithDataForLastMonth + " days for last month\n";
+			logger.debug("stock " + s.getInstrumentName() + " have only " + daysWithDataForLastMonth + " days for last month");
+			errors += "stock " + s.getInstrumentName() + " have only " + daysWithDataForLastMonth + " days for last month\n";
 			return errors;
 		} else
-			logger.info("stock " + s.getName() + " have " + daysWithDataForLastMonth + " days for last month");
+			logger.info("stock " + s.getInstrumentName() + " have " + daysWithDataForLastMonth + " days for last month");
 		double volumeAmount = 0;
 		for (int i = daysWithDataForLastYear; i < days.size(); ++i)
 			volumeAmount += days.get(i).volume;
 		volumeAmount = volumeAmount / daysWithDataForLastYear;
 
 		if (volumeAmount < minimalAverageYearVolume) {
-			logger.debug("stock " + s.getName() + " have only " + volumeAmount + ", it is too small average volume amount for last year");
-			errors += "stock " + s.getName() + " have only " + volumeAmount + ", it is too small average volume amount for last year\n";
+			logger.debug("stock " + s.getInstrumentName() + " have only " + volumeAmount + ", it is too small average volume amount for last year");
+			errors += "stock " + s.getInstrumentName() + " have only " + volumeAmount + ", it is too small average volume amount for last year\n";
 		}
 		return errors;
 	}
@@ -104,9 +104,9 @@ public class StockFilter {
 		float averagePercentDaysPerSeveralYear = (float) realDaysForTenYears / expectedDaysForLast10Year;
 
 		if (averagePercentDaysPerSeveralYear < minimalDaysPercentPerLastSeveralYears) {
-			logger.debug("stock " + s.getName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount
+			logger.debug("stock " + s.getInstrumentName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount
 					+ " years, thats not enought");
-			errors += "stock " + s.getName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount
+			errors += "stock " + s.getInstrumentName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount
 					+ " years, thats not enought\n";
 		}
 		return errors;
@@ -142,13 +142,13 @@ public class StockFilter {
 			final double previousAdjective = days.get(i - 1).getAdjClose();
 			final double currentAdjective = days.get(i).getAdjClose();
 			if (Double.compare(previousAdjective, 0.0) == 0) {
-				return "Adjective Close Price could not be Zero (" + s.getName() + ":" + days.get(i - 1).getDate() + ")";
+				return "Adjective Close Price could not be Zero (" + s.getInstrumentName() + ":" + days.get(i - 1).getDate() + ")";
 			}
 			if (Double.compare(currentAdjective, 0.0) == 0) {
-				return "Adjective Close Price could not be Zero (" + s.getName() + ":" + days.get(i).getDate() + ")";
+				return "Adjective Close Price could not be Zero (" + s.getInstrumentName() + ":" + days.get(i).getDate() + ")";
 			}
 			if (Math.abs(1.0 - previousAdjective / currentAdjective) > valuableGapInPercents) {
-				return "Adjective Close Price Gap found (" + s.getName() + ":" + days.get(i - 1).getDate() + ")";
+				return "Adjective Close Price Gap found (" + s.getInstrumentName() + ":" + days.get(i - 1).getDate() + ")";
 			}
 		}
 		return "";
