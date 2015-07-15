@@ -2,9 +2,12 @@ package stsc.yahoo.downloader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.common.stocks.UnitedFormatStock;
+import stsc.stocks.repo.MetaIndicesRepository;
+import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.yahoo.StringUtils;
 import stsc.yahoo.YahooSettings;
 
@@ -22,6 +25,7 @@ public final class YahooDownloadCourutine {
 	private final String endPattern;
 	private final int stockNameMinLength;
 	private final int stockNameMaxLength;
+	private final MetaIndicesRepository indicesRepository;
 
 	private volatile boolean stopped = false;
 
@@ -37,11 +41,14 @@ public final class YahooDownloadCourutine {
 		this.stockNameMaxLength = stockNameMaxLength;
 		this.downloadThreadSize = downloadThreadSize;
 
+		this.indicesRepository = new MetaIndicesRepositoryIncodeImpl();
+
 		downloadThread = new DownloadYahooStockThread(logger, settings);
 	}
 
 	public void start() throws InterruptedException {
 		logger.log().trace("starting");
+		fillStockListFromBusinessIndexes(settings.getFilesystemStockNamesQueue());
 		if (downloadExisted) {
 			UnitedFormatStock.loadStockList(settings.getDataFolder(), settings.getFilesystemStockNamesQueue());
 		} else {
@@ -73,6 +80,19 @@ public final class YahooDownloadCourutine {
 		}
 
 		logger.log().trace("finishing");
+	}
+
+	private void fillStockListFromBusinessIndexes(Queue<String> filesystemStockNamesQueue) {
+		addAll(indicesRepository.getCountryMarketIndices(), filesystemStockNamesQueue);
+		addAll(indicesRepository.getGlobalMarketIndices(), filesystemStockNamesQueue);
+		addAll(indicesRepository.getRegionMarketIndices(), filesystemStockNamesQueue);
+	}
+
+	private <T extends Enum<T>> void addAll(List<T> countryMarketIndices, Queue<String> filesystemStockNamesQueue) {
+		for (T i : countryMarketIndices) {
+			filesystemStockNamesQueue.add(i.name());
+		}
+
 	}
 
 	private void generateNextElement(char[] generatedText, int currentIndex, int size) {
