@@ -48,6 +48,10 @@
     	  	<id>stsc-general-mvn-repo</id>
      		<url>https://raw.github.com/sidorovis/stsc/stsc.general/</url>
    		</repository>
+	    <repository>
+    	  	<id>stsc-stocks-indexes-mvn-repo</id>
+     		<url>https://raw.github.com/sidorovis/stsc/stsc.stocks.indexes/</url>
+   		</repository>
 	</repositories>
 
   <build>
@@ -101,6 +105,12 @@
   </build>
 
   <dependencies>
+
+		<dependency>
+			<groupId>stsc</groupId>
+			<artifactId>stsc.stocks.indexes</artifactId>
+			<version>0.0.18-WEBINTERFACE</version>
+		</dependency>
 
     <dependency>
       <groupId>stsc</groupId>

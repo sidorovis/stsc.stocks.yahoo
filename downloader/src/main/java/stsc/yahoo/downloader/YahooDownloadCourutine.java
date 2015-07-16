@@ -1,15 +1,14 @@
 package stsc.yahoo.downloader;
 
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
 import stsc.common.service.statistics.DownloaderLogger;
-import stsc.common.stocks.UnitedFormatStock;
-import stsc.stocks.repo.MetaIndicesRepository;
 import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
-import stsc.yahoo.StringUtils;
 import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooStockNameListGenerator;
 
 public final class YahooDownloadCourutine {
 
@@ -25,7 +24,7 @@ public final class YahooDownloadCourutine {
 	private final String endPattern;
 	private final int stockNameMinLength;
 	private final int stockNameMaxLength;
-	private final MetaIndicesRepository indicesRepository;
+	private final YahooStockNameListGenerator yahooStockNameListGenerator;
 
 	private volatile boolean stopped = false;
 
@@ -40,8 +39,7 @@ public final class YahooDownloadCourutine {
 		this.stockNameMinLength = stockNameMinLength;
 		this.stockNameMaxLength = stockNameMaxLength;
 		this.downloadThreadSize = downloadThreadSize;
-
-		this.indicesRepository = new MetaIndicesRepositoryIncodeImpl();
+		this.yahooStockNameListGenerator = new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl());
 
 		downloadThread = new DownloadYahooStockThread(logger, settings);
 	}
@@ -50,17 +48,13 @@ public final class YahooDownloadCourutine {
 		logger.log().trace("starting");
 		fillStockListFromBusinessIndexes(settings.getFilesystemStockNamesQueue());
 		if (downloadExisted) {
-			UnitedFormatStock.loadStockList(settings.getDataFolder(), settings.getFilesystemStockNamesQueue());
+			YahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()),
+					settings.getFilesystemStockNamesQueue());
 		} else {
 			if (downloadByPattern) {
-				String pattern = startPattern;
-				while (StringUtils.comparePatterns(pattern, endPattern) <= 0) {
-					settings.addTask(pattern);
-					pattern = StringUtils.nextPermutation(pattern);
-				}
+				yahooStockNameListGenerator.fillWithBeginEndPatterns(startPattern, endPattern, settings.getFilesystemStockNamesQueue());
 			} else {
-				for (int i = stockNameMinLength; i <= stockNameMaxLength; ++i)
-					generateTasks(i);
+				yahooStockNameListGenerator.fillWithStockNameLength(stockNameMinLength, stockNameMaxLength, settings.getFilesystemStockNamesQueue());
 			}
 		}
 		if (stopped) {
@@ -83,41 +77,7 @@ public final class YahooDownloadCourutine {
 	}
 
 	private void fillStockListFromBusinessIndexes(Queue<String> filesystemStockNamesQueue) {
-		addAll(indicesRepository.getCountryMarketIndices(), filesystemStockNamesQueue);
-		addAll(indicesRepository.getGlobalMarketIndices(), filesystemStockNamesQueue);
-		addAll(indicesRepository.getRegionMarketIndices(), filesystemStockNamesQueue);
-	}
-
-	private <T extends Enum<T>> void addAll(List<T> countryMarketIndices, Queue<String> filesystemStockNamesQueue) {
-		for (T i : countryMarketIndices) {
-			filesystemStockNamesQueue.add(i.name());
-		}
-
-	}
-
-	private void generateNextElement(char[] generatedText, int currentIndex, int size) {
-		for (char c = 'a'; c <= 'z'; ++c) {
-			generatedText[currentIndex] = c;
-			if (currentIndex == size - 1) {
-				String newTask = new String(generatedText);
-				settings.addTask(newTask);
-			} else {
-				generateNextElement(generatedText, currentIndex + 1, size);
-			}
-		}
-	}
-
-	private void generateTasks(int taskLength) {
-		char[] generatedText = new char[taskLength];
-		generateNextElement(generatedText, 0, taskLength);
-		if (taskLength > 1) {
-			generatedText[0] = '^';
-			generateNextElement(generatedText, 1, taskLength);
-			generatedText[0] = '.';
-			generateNextElement(generatedText, 1, taskLength);
-			generatedText[0] = '$';
-			generateNextElement(generatedText, 1, taskLength);
-		}
+		yahooStockNameListGenerator.fillWithIndexesFromBase(filesystemStockNamesQueue);
 	}
 
 	public void stop() throws Exception {

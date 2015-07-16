@@ -2,6 +2,7 @@ package stsc.yahoo.liquiditator;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -10,8 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
-import stsc.common.stocks.UnitedFormatStock;
 import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooStockNameListGenerator;
 import stsc.yahoo.YahooUtils;
 
 final class DownloadedStockFilter {
@@ -40,7 +41,8 @@ final class DownloadedStockFilter {
 
 		logger.trace("downloaded stock filter started");
 		settings = YahooUtils.createSettings();
-		UnitedFormatStock.loadStockList(settings.getDataFolder(), settings.getFilesystemStockNamesQueue());
+		YahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()),
+				settings.getFilesystemStockNamesQueue());
 		logger.trace("collected stock names to start filter process: {}", settings.taskQueueSize());
 
 		List<Thread> threads = new ArrayList<Thread>();

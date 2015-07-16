@@ -25,6 +25,9 @@ public class StringUtilsTest {
 		Assert.assertEquals("aad", StringUtils.nextPermutation("aac"));
 
 		Assert.assertEquals("aaaa", StringUtils.nextPermutation("zzz"));
+
+		Assert.assertEquals("daa", StringUtils.nextPermutation("czz"));
+
 	}
 
 	@Test

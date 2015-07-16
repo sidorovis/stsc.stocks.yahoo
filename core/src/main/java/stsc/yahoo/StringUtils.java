@@ -26,7 +26,11 @@ public final class StringUtils {
 					return f.substring(0, f.length() - 1) + new Character(last).toString();
 				} else {
 					char symb = (char) (f.charAt(i) + 1);
-					return f.substring(0, i) + new Character(symb).toString() + "a" + f.substring(i + 2, f.length());
+					String postfix = "";
+					for (int u = i + 1; u < f.length(); ++u) {
+						postfix += "a";
+					}
+					return f.substring(0, i) + new Character(symb).toString() + postfix;
 				}
 			}
 		return f;

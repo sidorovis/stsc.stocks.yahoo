@@ -1,6 +1,7 @@
 package stsc.yahoo;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,6 @@ import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
 import stsc.common.stocks.Stock;
 import stsc.common.stocks.StockLock;
-import stsc.common.stocks.UnitedFormatStock;
 import stsc.storage.ThreadSafeStockStorage;
 
 public class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver {
@@ -35,6 +35,7 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 		super();
 		this.settings = settings;
 		loadStocksFromFileSystem(true);
+
 	}
 
 	public YahooFileStockStorage() throws ClassNotFoundException, IOException {
@@ -53,8 +54,7 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 		this(dataFolder, filteredDataFolder, true);
 	}
 
-	public YahooFileStockStorage(String dataFolder, String filteredDataFolder, boolean autoStart) throws ClassNotFoundException,
-			IOException {
+	public YahooFileStockStorage(String dataFolder, String filteredDataFolder, boolean autoStart) throws ClassNotFoundException, IOException {
 		super();
 		this.settings = new YahooSettings(dataFolder, filteredDataFolder);
 		loadStocksFromFileSystem(autoStart);
@@ -74,7 +74,8 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 	}
 
 	private void loadFilteredDatafeed() {
-		UnitedFormatStock.loadStockList(settings.getFilteredDataFolder(), settings.getFilesystemStockNamesQueue());
+		YahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getFilteredDataFolder()),
+				settings.getFilesystemStockNamesQueue());
 	}
 
 	private void loadStocks() throws ClassNotFoundException, IOException {
