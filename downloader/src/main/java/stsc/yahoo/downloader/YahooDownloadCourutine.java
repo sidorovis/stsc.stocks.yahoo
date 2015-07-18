@@ -63,7 +63,7 @@ public final class YahooDownloadCourutine {
 		logger.log().trace("tasks size: {}", settings.taskQueueSize());
 		final List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < downloadThreadSize; ++i) {
-			Thread newThread = new Thread(downloadThread);
+			final Thread newThread = new Thread(downloadThread);
 			threads.add(newThread);
 			newThread.start();
 		}
