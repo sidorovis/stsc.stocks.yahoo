@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import stsc.common.stocks.UnitedFormatStock;
+import stsc.stocks.indexes.MarketIndex;
 import stsc.stocks.repo.MetaIndicesRepository;
 
 public final class YahooStockNameListGenerator {
@@ -34,9 +35,9 @@ public final class YahooStockNameListGenerator {
 		return collection;
 	}
 
-	private <E extends Enum<E>, T extends Collection<String>> void addAll(List<E> countryMarketIndices, T filesystemStockNamesQueue) {
+	private <E extends MarketIndex<E>, T extends Collection<String>> void addAll(List<E> countryMarketIndices, T filesystemStockNamesQueue) {
 		for (E i : countryMarketIndices) {
-			filesystemStockNamesQueue.add(i.name());
+			filesystemStockNamesQueue.add(i.getFilesystemName());
 		}
 	}
 
