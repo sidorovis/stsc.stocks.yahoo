@@ -67,7 +67,7 @@ public class YahooDownloadThreadTest {
 		{
 			final Optional<? extends Stock> s = settings.getStockFromFileSystem("_094FTSE");
 			Assert.assertTrue(s.isPresent());
-			Assert.assertEquals("^FTSE", s.get().getInstrumentName());
+			Assert.assertEquals("^ftse", s.get().getInstrumentName());
 		}
 		new File("./test/_094FTSE.uf").delete();
 	}
