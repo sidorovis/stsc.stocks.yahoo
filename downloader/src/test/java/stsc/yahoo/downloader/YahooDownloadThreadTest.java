@@ -65,10 +65,10 @@ public class YahooDownloadThreadTest {
 			th.join();
 		}
 		{
-			final Optional<? extends Stock> s = settings.getStockFromFileSystem("_094FTSE");
+			final Optional<? extends Stock> s = settings.getStockFromFileSystem("_094ftse");
 			Assert.assertTrue(s.isPresent());
 			Assert.assertEquals("^ftse", s.get().getInstrumentName());
 		}
-		new File("./test/_094FTSE.uf").delete();
+		new File("./test/_094ftse.uf").delete();
 	}
 }
