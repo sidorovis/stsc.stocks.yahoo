@@ -4,14 +4,13 @@
 
 	<groupId>stsc</groupId>
 	<artifactId>stsc.stocks.yahoo.core</artifactId>
-	<version>0.0.18-WEBINTERFACE</version>
+	<version>0.0.19-BOM</version>
 	<packaging>jar</packaging>
 
 	<name>stsc.stocks.yahoo.core</name>
 	<url>https://github.com/sidorovis/stsc</url>
 
 	<properties>
-		<project.build.sourceEncoding>Cp1251</project.build.sourceEncoding>
 		<github.global.server>github</github.global.server>
 	</properties>
 
@@ -22,6 +21,18 @@
 			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>stsc</groupId>
+				<artifactId>stsc.bom</artifactId>
+				<version>0.0.19-BOM</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<repositories>
 		<repository>
@@ -81,9 +92,9 @@
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
-				<version>0.11</version>
+				<version>0.12</version>
 				<configuration>
-					<message>#2 Maven artifacts for ${project.version}</message>
+					<message>#4 new version of stsc.stocks.yahoo.core ${project.version} was deployed</message>
 					<noJekyll>true</noJekyll>
 					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
 					<branch>refs/heads/stsc.stocks.yahoo.core</branch>
@@ -111,20 +122,16 @@
 		<dependency>
 			<groupId>stsc</groupId>
 			<artifactId>stsc.stocks.indexes</artifactId>
-			<version>0.0.18-WEBINTERFACE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>stsc</groupId>
 			<artifactId>stsc.general</artifactId>
-			<version>0.0.18-WEBINTERFACE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
