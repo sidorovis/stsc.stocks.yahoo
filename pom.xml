@@ -14,6 +14,13 @@
 		<github.global.server>github</github.global.server>
 	</properties>
 
+        <repositories>
+                <repository>
+                        <id>stsc-bom-repository</id>
+                        <url>https://raw.github.com/sidorovis/stsc/stsc.bom/</url>
+                </repository>
+        </repositories>
+
 	<distributionManagement>
 		<repository>
 			<id>internal.repo</id>
