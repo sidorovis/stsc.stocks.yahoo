@@ -6,7 +6,7 @@ import java.util.Optional;
 import stsc.common.service.statistics.StatisticType;
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.common.stocks.UnitedFormatStock;
-import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooUtils;
 import stsc.yahoo.liquiditator.StockFilter;
 
@@ -14,7 +14,7 @@ class DownloadYahooStockThread implements Runnable {
 
 	private static final int printEach = 100;
 
-	private final YahooSettings settings;
+	private final YahooDatafeedSettings settings;
 	private final StockFilter stockFilter;
 	private int solvedAmount = 0;
 	private boolean deleteFilteredData = true;
@@ -22,13 +22,13 @@ class DownloadYahooStockThread implements Runnable {
 
 	private volatile boolean stopped = false;
 
-	DownloadYahooStockThread(DownloaderLogger logger, YahooSettings settings) {
+	DownloadYahooStockThread(DownloaderLogger logger, YahooDatafeedSettings settings) {
 		this.logger = logger;
 		this.settings = settings;
 		this.stockFilter = new StockFilter();
 	}
 
-	DownloadYahooStockThread(DownloaderLogger logger, YahooSettings settings, boolean deleteFilteredData) {
+	DownloadYahooStockThread(DownloaderLogger logger, YahooDatafeedSettings settings, boolean deleteFilteredData) {
 		this.logger = logger;
 		this.settings = settings;
 		this.stockFilter = new StockFilter();

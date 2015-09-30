@@ -7,7 +7,7 @@ import java.util.Queue;
 
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
-import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
 
 public final class YahooDownloadCourutine {
@@ -18,7 +18,7 @@ public final class YahooDownloadCourutine {
 
 	private final int downloadThreadSize;
 	private final boolean downloadExisted;
-	private final YahooSettings settings;
+	private final YahooDatafeedSettings settings;
 	private final boolean downloadByPattern;
 	private final String startPattern;
 	private final String endPattern;
@@ -28,7 +28,7 @@ public final class YahooDownloadCourutine {
 
 	private volatile boolean stopped = false;
 
-	public YahooDownloadCourutine(DownloaderLogger logger, boolean downloadExisted, YahooSettings settings, boolean downloadByPattern, String startPattern,
+	public YahooDownloadCourutine(DownloaderLogger logger, boolean downloadExisted, YahooDatafeedSettings settings, boolean downloadByPattern, String startPattern,
 			String endPattern, int stockNameMinLength, int stockNameMaxLength, int downloadThreadSize) {
 		this.logger = logger;
 		this.downloadExisted = downloadExisted;

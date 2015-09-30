@@ -10,22 +10,22 @@ import org.apache.logging.log4j.Logger;
 
 import stsc.common.stocks.Stock;
 import stsc.common.stocks.UnitedFormatStock;
-import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooUtils;
 import stsc.yahoo.liquiditator.StockFilter;
 
 class FilterThread implements Runnable {
 
-	private final YahooSettings settings;
+	private final YahooDatafeedSettings settings;
 	private final StockFilter stockFilter;
 	private static Logger logger = LogManager.getLogger("FilterThread");
 
-	FilterThread(final YahooSettings settings, Date d) {
+	FilterThread(final YahooDatafeedSettings settings, Date d) {
 		this.settings = settings;
 		this.stockFilter = new StockFilter(d);
 	}
 
-	FilterThread(final YahooSettings settings) {
+	FilterThread(final YahooDatafeedSettings settings) {
 		this.settings = settings;
 		stockFilter = new StockFilter();
 	}

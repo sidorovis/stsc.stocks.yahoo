@@ -7,14 +7,14 @@ import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Test;
 
-import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooUtils;
 
 public class FilterThreadTest {
 	
 	@Test
 	public void testFilterThread() throws IOException, InterruptedException {
-		YahooSettings settings = YahooUtils.createSettings("./test_data/", "./test/");
+		YahooDatafeedSettings settings = YahooUtils.createSettings("./test_data/", "./test/");
 		settings.addTask("aaoi").addTask("aapl").addTask("ibm").addTask("spy");
 
 		FilterThread filterThread = new FilterThread(settings, new LocalDate(2014, 1, 14).toDate());

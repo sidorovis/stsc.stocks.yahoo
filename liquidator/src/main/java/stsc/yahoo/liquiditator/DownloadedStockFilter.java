@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
-import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
 import stsc.yahoo.YahooUtils;
 
@@ -24,7 +24,7 @@ final class DownloadedStockFilter {
 	static int processThreadSize = 8;
 	private static Logger logger = LogManager.getLogger("DownloadedStockFilter");
 
-	static YahooSettings settings;
+	static YahooDatafeedSettings settings;
 
 	private void readProperties() throws IOException {
 		FileInputStream in = new FileInputStream("./config/liquiditator.ini");

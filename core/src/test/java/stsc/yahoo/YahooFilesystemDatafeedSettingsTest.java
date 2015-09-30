@@ -10,7 +10,7 @@ public class YahooFilesystemDatafeedSettingsTest {
 
 	@Test
 	public void testYahooFilesystemDatafeedSettings() throws IOException {
-		YahooSettings settings = new YahooSettings("./test/", "./test/");
+		YahooDatafeedSettings settings = new YahooDatafeedSettings("./test/", "./test/");
 		Assert.assertEquals(settings.getFilesystemStockName(), null);
 		settings.addTask("a");
 		Assert.assertEquals(1, settings.taskQueueSize());
@@ -22,7 +22,7 @@ public class YahooFilesystemDatafeedSettingsTest {
 
 	@Test
 	public void testGetStockFromFileSystem() throws IOException {
-		final YahooSettings settings = new YahooSettings("./test_data/", "./test/");
+		final YahooDatafeedSettings settings = new YahooDatafeedSettings("./test_data/", "./test/");
 		Assert.assertNotNull(settings.getStockFromFileSystem("aapl"));
 		Assert.assertFalse(settings.getStockFromFileSystem("a").isPresent());
 	}

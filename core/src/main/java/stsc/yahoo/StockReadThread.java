@@ -10,10 +10,10 @@ import stsc.common.stocks.UnitedFormatStock;
 
 class StockReadThread implements Runnable {
 
-	private final YahooSettings settings;
+	private final YahooDatafeedSettings settings;
 	private final List<LoadStockReceiver> receivers = Collections.synchronizedList(new ArrayList<LoadStockReceiver>());
 
-	public StockReadThread(YahooSettings settings) {
+	public StockReadThread(YahooDatafeedSettings settings) {
 		this.settings = settings;
 	}
 

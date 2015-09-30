@@ -8,13 +8,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import stsc.common.stocks.UnitedFormatStock;
 
-public class YahooSettings {
+public class YahooDatafeedSettings {
 
 	private final ConcurrentLinkedQueue<String> filesystemStockNamesForLoadQueue = new ConcurrentLinkedQueue<String>();
 	private String dataFolder = "./data/";
 	private String filteredDataFolder = "./filtered_data/";
 
-	public YahooSettings(String dataFolder, String filteredDataFolder) throws IOException {
+	public YahooDatafeedSettings(String dataFolder, String filteredDataFolder) throws IOException {
 		this.dataFolder = checkFolder(dataFolder, "Bad data folder");
 		this.filteredDataFolder = checkFolder(filteredDataFolder, "Bad filtered data folder");
 	}
@@ -32,7 +32,7 @@ public class YahooSettings {
 		return filesystemStockNamesForLoadQueue.size();
 	}
 
-	public YahooSettings addTask(String s) {
+	public YahooDatafeedSettings addTask(String s) {
 		filesystemStockNamesForLoadQueue.add(s);
 		return this;
 	}

@@ -21,11 +21,11 @@ public class YahooUtils {
 			Files.copy(originalFile.toPath(), filteredFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 
-	public static YahooSettings createSettings() throws IOException {
-		return new YahooSettings("./data/", "./filtered_data/");
+	public static YahooDatafeedSettings createSettings() throws IOException {
+		return new YahooDatafeedSettings("./data/", "./filtered_data/");
 	}
 
-	public static YahooSettings createSettings(String dataFolder, String filteredDataFolder) throws IOException {
-		return new YahooSettings(dataFolder, filteredDataFolder);
+	public static YahooDatafeedSettings createSettings(String dataFolder, String filteredDataFolder) throws IOException {
+		return new YahooDatafeedSettings(dataFolder, filteredDataFolder);
 	}
 }

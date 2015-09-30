@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.common.stocks.Stock;
-import stsc.yahoo.YahooSettings;
+import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooUtils;
 
 import com.google.common.io.Files;
@@ -19,7 +19,7 @@ public class YahooDownloadThreadTest {
 
 	@Test
 	public void testDownloadThread() throws InterruptedException, IOException, ClassNotFoundException {
-		final YahooSettings settings = YahooUtils.createSettings("./test/", "./test/");
+		final YahooDatafeedSettings settings = YahooUtils.createSettings("./test/", "./test/");
 		Files.copy(new File("./test_data/aaoi.uf"), new File("./test/aaoi.uf"));
 		settings.addTask("a");
 		DownloadYahooStockThread downloadThread = new DownloadYahooStockThread(Mockito.mock(DownloaderLogger.class), settings, false);
@@ -56,7 +56,7 @@ public class YahooDownloadThreadTest {
 
 	@Test
 	public void testDownloadThreadForDiffenetInstrumentNameFilesystemName() throws InterruptedException, IOException, ClassNotFoundException {
-		final YahooSettings settings = YahooUtils.createSettings("./test/", "./test/");
+		final YahooDatafeedSettings settings = YahooUtils.createSettings("./test/", "./test/");
 		settings.addTask("_094FTSE");
 		final DownloadYahooStockThread downloadThread = new DownloadYahooStockThread(Mockito.mock(DownloaderLogger.class), settings, false);
 		{

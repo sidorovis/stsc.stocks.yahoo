@@ -26,12 +26,12 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 
 	private static Logger logger = LogManager.getLogger("YahooFileStorage");
 
-	private final YahooSettings settings;
+	private final YahooDatafeedSettings settings;
 	private final int readStockThreadSize = 4;
 	private final List<Thread> threads = new ArrayList<Thread>();
 	private final List<LoadStockReceiver> receivers = Collections.synchronizedList(new ArrayList<LoadStockReceiver>());
 
-	public YahooFileStockStorage(YahooSettings settings) throws ClassNotFoundException, IOException {
+	public YahooFileStockStorage(YahooDatafeedSettings settings) throws ClassNotFoundException, IOException {
 		super();
 		this.settings = settings;
 		loadStocksFromFileSystem(true);
@@ -56,7 +56,7 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 
 	public YahooFileStockStorage(String dataFolder, String filteredDataFolder, boolean autoStart) throws ClassNotFoundException, IOException {
 		super();
-		this.settings = new YahooSettings(dataFolder, filteredDataFolder);
+		this.settings = new YahooDatafeedSettings(dataFolder, filteredDataFolder);
 		loadStocksFromFileSystem(autoStart);
 	}
 
