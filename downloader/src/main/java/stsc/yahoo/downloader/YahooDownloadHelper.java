@@ -22,7 +22,7 @@ public final class YahooDownloadHelper {
 	private static final int waitTriesAmount = 5;
 	private static final int waitTimeBetweenTries = 500;
 
-	public static final Optional<UnitedFormatStock> download(String filesystemStockName) throws InterruptedException {
+	public final Optional<UnitedFormatStock> download(String filesystemStockName) throws InterruptedException {
 		int tries = 0;
 		String error = "";
 		UnitedFormatStock newStock = null;
@@ -52,7 +52,7 @@ public final class YahooDownloadHelper {
 	 * @return true if it was downloaded partially
 	 * @throws InterruptedException
 	 */
-	public static final boolean partiallyDownload(final UnitedFormatStock stock) throws InterruptedException {
+	public final boolean partiallyDownload(final UnitedFormatStock stock) throws InterruptedException {
 		final String downloadLink = generatePartiallyDownloadLine(stock);
 		if (downloadLink.isEmpty()) {
 			return false;
@@ -84,7 +84,7 @@ public final class YahooDownloadHelper {
 	 * @return http yahoo market datafeed link to download (new part of the
 	 *         stock).
 	 */
-	static String generatePartiallyDownloadLine(final UnitedFormatStock stock) {
+	String generatePartiallyDownloadLine(final UnitedFormatStock stock) {
 		final ArrayList<Day> days = stock.getDays();
 		final Date lastDate = days.get(days.size() - 1).date;
 		final Calendar cal = Calendar.getInstance();
@@ -102,7 +102,7 @@ public final class YahooDownloadHelper {
 		return "http://ichart.yahoo.com/table.csv?s=" + stock.getInstrumentName() + "&a=" + month + "&b=" + day + "&c=" + year;
 	}
 
-	public static boolean deleteFilteredFile(boolean deleteFilteredData, String filteredDataFolder, String stockName) {
+	public boolean deleteFilteredFile(boolean deleteFilteredData, String filteredDataFolder, String stockName) {
 		if (deleteFilteredData) {
 			String filteredFilePath = getPath(filteredDataFolder, stockName);
 			File filteredFile = new File(filteredFilePath);

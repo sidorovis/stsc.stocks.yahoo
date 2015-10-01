@@ -18,10 +18,11 @@ public class YahooDownloadHelperTest {
 
 	@Test
 	public void testGeneratePartiallyDownloadLine() throws IOException, ParseException, URISyntaxException {
+		final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
 		final UnitedFormatStock aahc = UnitedFormatStock.readFromCsvFile("aahc", resourceToPath("aahc.csv"));
-		Assert.assertEquals("http://ichart.yahoo.com/table.csv?s=aahc&a=5&b=4&c=2013", YahooDownloadHelper.generatePartiallyDownloadLine(aahc));
+		Assert.assertEquals("http://ichart.yahoo.com/table.csv?s=aahc&a=5&b=4&c=2013", yahooDownloadHelper.generatePartiallyDownloadLine(aahc));
 		final UnitedFormatStock aaoi = UnitedFormatStock.readFromCsvFile("aaoi", resourceToPath("aaoi.csv"));
-		Assert.assertEquals("http://ichart.yahoo.com/table.csv?s=aaoi&a=0&b=14&c=2014", YahooDownloadHelper.generatePartiallyDownloadLine(aaoi));
+		Assert.assertEquals("http://ichart.yahoo.com/table.csv?s=aaoi&a=0&b=14&c=2014", yahooDownloadHelper.generatePartiallyDownloadLine(aaoi));
 	}
 
 }

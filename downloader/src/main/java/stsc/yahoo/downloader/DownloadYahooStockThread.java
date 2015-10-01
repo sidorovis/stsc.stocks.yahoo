@@ -1,6 +1,7 @@
 package stsc.yahoo.downloader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 import stsc.common.service.statistics.StatisticType;
@@ -22,6 +23,8 @@ class DownloadYahooStockThread implements Runnable {
 
 	private volatile boolean stopped = false;
 
+	private final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
+
 	DownloadYahooStockThread(DownloaderLogger logger, YahooDatafeedSettings settings) {
 		this.logger = logger;
 		this.settings = settings;
@@ -42,50 +45,62 @@ class DownloadYahooStockThread implements Runnable {
 				Optional<UnitedFormatStock> s = settings.getStockFromFileSystem(filesystemStockName);
 				boolean downloaded = false;
 				if (!s.isPresent()) {
-					s = YahooDownloadHelper.download(filesystemStockName);
+					s = yahooDownloadHelper.download(filesystemStockName);
 					if (s.isPresent()) {
 						s.get().storeUniteFormatToFolder(settings.getDataFolder());
 					}
 					downloaded = true;
 					logger.log(StatisticType.TRACE, "task fully downloaded: " + filesystemStockName);
 				} else {
-					downloaded = YahooDownloadHelper.partiallyDownload(s.get());
-					if (downloaded) {
-						s.get().storeUniteFormatToFolder(settings.getDataFolder());
-					}
-					logger.log(StatisticType.TRACE, "task partially downloaded: " + filesystemStockName);
+					downloaded = partiallDownload(filesystemStockName, s);
 				}
 				if (downloaded) {
-					final boolean filtered = stockFilter.isLiquid(s.get()) && stockFilter.isValid(s.get());
-					if (filtered) {
-						YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), filesystemStockName);
-						logger.log(StatisticType.INFO, "task is liquid and copied to filter stock directory: " + filesystemStockName);
-					} else {
-						final boolean deleted = YahooDownloadHelper.deleteFilteredFile(deleteFilteredData, settings.getFilteredDataFolder(),
-								filesystemStockName);
-						if (deleted) {
-							logger.log(StatisticType.DEBUG, "deleting filtered file with stock " + filesystemStockName
-									+ " it doesn't pass new liquidity filter tests");
-						}
-					}
+					processDownloadedStock(filesystemStockName, s);
 				} else {
 					logger.log(StatisticType.INFO, "task is considered as downloaded: " + filesystemStockName);
 				}
 			} catch (Exception e) {
 				logger.log(StatisticType.TRACE, "task " + filesystemStockName + " throwed an exception: " + e.toString());
-				File file = new File(getPath(settings.getDataFolder(), filesystemStockName));
+				final File file = new File(getPath(settings.getDataFolder(), filesystemStockName));
 				if (file.length() == 0)
 					file.delete();
 			}
-			synchronized (settings) {
-				solvedAmount += 1;
-				if (solvedAmount % printEach == 0)
-					logger.log().info("solved {} tasks last stock name {}", solvedAmount, filesystemStockName);
-			}
+			increaseDownloadStatistics(filesystemStockName);
 			if (stopped) {
 				break;
 			}
 			filesystemStockName = settings.getFilesystemStockName();
+		}
+	}
+
+	private void increaseDownloadStatistics(String filesystemStockName) {
+		synchronized (settings) {
+			solvedAmount += 1;
+			if (solvedAmount % printEach == 0)
+				logger.log().info("solved {} tasks last stock name {}", solvedAmount, filesystemStockName);
+		}
+	}
+
+	private boolean partiallDownload(String filesystemStockName, Optional<UnitedFormatStock> s) throws InterruptedException, IOException {
+		boolean downloaded;
+		downloaded = yahooDownloadHelper.partiallyDownload(s.get());
+		if (downloaded) {
+			s.get().storeUniteFormatToFolder(settings.getDataFolder());
+		}
+		logger.log(StatisticType.TRACE, "task partially downloaded: " + filesystemStockName);
+		return downloaded;
+	}
+
+	private void processDownloadedStock(String filesystemStockName, Optional<UnitedFormatStock> s) throws IOException {
+		final boolean filtered = stockFilter.isLiquid(s.get()) && stockFilter.isValid(s.get());
+		if (filtered) {
+			YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), s.get().getInstrumentName());
+			logger.log(StatisticType.INFO, "task is liquid and copied to filter stock directory: " + filesystemStockName);
+		} else {
+			final boolean deleted = yahooDownloadHelper.deleteFilteredFile(deleteFilteredData, settings.getFilteredDataFolder(), filesystemStockName);
+			if (deleted) {
+				logger.log(StatisticType.DEBUG, "deleting filtered file with stock " + filesystemStockName + " it doesn't pass new liquidity filter tests");
+			}
 		}
 	}
 
