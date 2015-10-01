@@ -40,32 +40,8 @@
 			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
-			<id>stsc-bom-repository</id>
-			<url>https://raw.github.com/sidorovis/stsc/stsc.bom/</url>
-		</repository>
-		<repository>
-			<id>stsc-common-mvn-repo</id>
-			<url>https://raw.github.com/sidorovis/stsc/stsc.common/</url>
-		</repository>
-		<repository>
-			<id>stsc-signals-mvn-repo</id>
-			<url>https://raw.github.com/sidorovis/stsc/stsc.signals/</url>
-		</repository>
-		<repository>
-			<id>stsc-algorithms-common-mvn-repo</id>
-			<url>https://raw.github.com/sidorovis/stsc/stsc.algorithms.common/</url>
-		</repository>
-		<repository>
-			<id>stsc-algorithms-equity-test-mvn-repo</id>
-			<url>https://raw.github.com/sidorovis/stsc/stsc.algorithms.equity.test/</url>
-		</repository>
-		<repository>
-			<id>stsc-storage-mvn-repo</id>
-			<url>https://raw.github.com/sidorovis/stsc/stsc.storage/</url>
-		</repository>
-		<repository>
-			<id>stsc-general-mvn-repo</id>
-			<url>https://raw.github.com/sidorovis/stsc/stsc.general/</url>
+			<id>stsc-mvn-repository</id>
+			<url>https://raw.github.com/sidorovis/stsc/stsc.repository/</url>
 		</repository>
 	</repositories>
 
@@ -124,8 +100,9 @@
 					<message>$4 stsc.stocks.yahoo.liquidator project deployed with
 						version: ${project.version}</message>
 					<noJekyll>true</noJekyll>
+					<merge>true</merge>
 					<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>
-					<branch>refs/heads/stsc.stocks.yahoo.liquidator</branch>
+					<branch>refs/heads/stsc.repository</branch>
 					<includes>
 						<include>**/*</include>
 					</includes>
@@ -146,7 +123,6 @@
 	</build>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>stsc</groupId>
 			<artifactId>stsc.stocks.yahoo.core</artifactId>
@@ -156,7 +132,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
 	</dependencies>
 	<description>Stsc yahoo liquidator is a module for search and separate liquid stocks from 'yahoo' datafeed.</description>
 </project>
