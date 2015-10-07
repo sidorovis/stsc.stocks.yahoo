@@ -11,28 +11,32 @@ import org.apache.logging.log4j.Logger;
 import stsc.common.stocks.Stock;
 import stsc.common.stocks.UnitedFormatStock;
 import stsc.yahoo.YahooDatafeedSettings;
+import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;
 import stsc.yahoo.liquiditator.StockFilter;
 
 class FilterThread implements Runnable {
 
 	private final YahooDatafeedSettings settings;
+	private final YahooStockNames yahooStockNames;
 	private final StockFilter stockFilter;
 	private static Logger logger = LogManager.getLogger("FilterThread");
 
-	FilterThread(final YahooDatafeedSettings settings, Date d) {
+	FilterThread(final YahooDatafeedSettings settings, final YahooStockNames yahooStockNames, final Date d) {
 		this.settings = settings;
+		this.yahooStockNames = yahooStockNames;
 		this.stockFilter = new StockFilter(d);
 	}
 
-	FilterThread(final YahooDatafeedSettings settings) {
+	FilterThread(final YahooDatafeedSettings settings, final YahooStockNames yahooStockNames) {
 		this.settings = settings;
-		stockFilter = new StockFilter();
+		this.yahooStockNames = yahooStockNames;
+		this.stockFilter = new StockFilter();
 	}
 
 	@Override
 	public void run() {
-		String filesystemStockName = settings.getFilesystemStockName();
+		String filesystemStockName = yahooStockNames.getNextStockName();
 		while (filesystemStockName != null) {
 			try {
 				Optional<? extends Stock> s = settings.getStockFromFileSystem(filesystemStockName);
@@ -45,7 +49,7 @@ class FilterThread implements Runnable {
 			} catch (IOException e) {
 				logger.trace("binary file " + filesystemStockName + " processing throw IOException: " + e.toString());
 			}
-			filesystemStockName = settings.getFilesystemStockName();
+			filesystemStockName = yahooStockNames.getNextStockName();
 		}
 	}
 

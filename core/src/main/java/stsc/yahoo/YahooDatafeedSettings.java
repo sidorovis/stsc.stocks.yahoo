@@ -3,14 +3,11 @@ package stsc.yahoo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import stsc.common.stocks.UnitedFormatStock;
 
 public class YahooDatafeedSettings {
 
-	private final ConcurrentLinkedQueue<String> filesystemStockNamesForLoadQueue = new ConcurrentLinkedQueue<String>();
 	private String dataFolder = "./data/";
 	private String filteredDataFolder = "./filtered_data/";
 
@@ -26,24 +23,6 @@ public class YahooDatafeedSettings {
 		} else {
 			throw new IOException(message + ": " + dataFolder);
 		}
-	}
-
-	public int taskQueueSize() {
-		return filesystemStockNamesForLoadQueue.size();
-	}
-
-	public YahooDatafeedSettings addTask(String s) {
-		filesystemStockNamesForLoadQueue.add(s);
-		return this;
-	}
-
-	/**
-	 * into file system format for example: "_094FTSE"
-	 * 
-	 * @return
-	 */
-	public String getFilesystemStockName() {
-		return filesystemStockNamesForLoadQueue.poll();
 	}
 
 	public String generateUniteFormatPath(String filesystemName) {
@@ -65,10 +44,6 @@ public class YahooDatafeedSettings {
 
 	public String getFilteredDataFolder() {
 		return filteredDataFolder;
-	}
-
-	public Queue<String> getFilesystemStockNamesQueue() {
-		return filesystemStockNamesForLoadQueue;
 	}
 
 }

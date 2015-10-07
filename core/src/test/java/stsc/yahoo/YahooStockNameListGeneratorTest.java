@@ -1,7 +1,6 @@
 package stsc.yahoo;
 
 import java.nio.file.FileSystems;
-import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,43 +12,44 @@ public class YahooStockNameListGeneratorTest {
 
 	@Test
 	public void fillWithIndexesFromBase() {
-		final ArrayList<String> list = new ArrayList<>();
+		final YahooStockNames.Builder builder = new YahooStockNames.Builder();
 		final MetaIndicesRepository repo = new MetaIndicesRepositoryIncodeImpl();
 		final YahooStockNameListGenerator listGenerator = new YahooStockNameListGenerator(repo);
-		listGenerator.fillWithIndexesFromBase(list);
+		listGenerator.fillWithIndexesFromBase(builder);
 		final int expectedSize = repo.getCountryMarketIndices().size() + repo.getGlobalMarketIndices().size() + repo.getRegionMarketIndices().size();
+		final YahooStockNames list = builder.build();
 		Assert.assertEquals(expectedSize, list.size());
 	}
 
 	@Test
 	public void fillWithExistedFilesFromFolder() {
-		final ArrayList<String> list = new ArrayList<>();
-		YahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath("./test_data"), list);
-		Assert.assertEquals(4, list.size());
-		Assert.assertEquals("aaae", list.get(0));
+		final YahooStockNames.Builder bForExisted = new YahooStockNames.Builder();
+		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath("./test_data"), bForExisted);
+		Assert.assertEquals(4, bForExisted.build().size());
+		Assert.assertEquals("aaae", bForExisted.build().getNextStockName());
 	}
 
 	@Test
 	public void fillWithBeginEndPatterns() {
-		final ArrayList<String> list = new ArrayList<>();
+		final YahooStockNames.Builder bFor2 = new YahooStockNames.Builder();
 		final MetaIndicesRepository repo = new MetaIndicesRepositoryIncodeImpl();
 		final YahooStockNameListGenerator listGenerator = new YahooStockNameListGenerator(repo);
-		listGenerator.fillWithBeginEndPatterns("a", "zz", list);
-		Assert.assertEquals(26 * 27, list.size());
-		list.clear();
-		listGenerator.fillWithBeginEndPatterns("aaa", "zzz", list);
-		Assert.assertEquals(26 * 26 * 26, list.size());
+		listGenerator.fillWithBeginEndPatterns("a", "zz", bFor2);
+		Assert.assertEquals(26 * 27, bFor2.build().size());
+		final YahooStockNames.Builder bFor3 = new YahooStockNames.Builder();
+		listGenerator.fillWithBeginEndPatterns("aaa", "zzz", bFor3);
+		Assert.assertEquals(26 * 26 * 26, bFor3.build().size());
 	}
 
 	@Test
 	public void fillWithStockNameLength() {
-		final ArrayList<String> list = new ArrayList<>();
+		final YahooStockNames.Builder bFor1To2 = new YahooStockNames.Builder();
 		final MetaIndicesRepository repo = new MetaIndicesRepositoryIncodeImpl();
 		final YahooStockNameListGenerator listGenerator = new YahooStockNameListGenerator(repo);
-		listGenerator.fillWithStockNameLength(1, 2, list);
-		Assert.assertEquals(26 + 3 * 26 + 26 * 26, list.size());
-		list.clear();
-		listGenerator.fillWithStockNameLength(2, 3, list);
-		Assert.assertEquals(26 * (29 + 3 * 26 + 26 * 26), list.size());
+		listGenerator.fillWithStockNameLength(1, 2, bFor1To2);
+		Assert.assertEquals(26 + 3 * 26 + 26 * 26, bFor1To2.build().size());
+		final YahooStockNames.Builder bFor2To3 = new YahooStockNames.Builder();
+		listGenerator.fillWithStockNameLength(2, 3, bFor2To3);
+		Assert.assertEquals(26 * (29 + 3 * 26 + 26 * 26), bFor2To3.build().size());
 	}
 }

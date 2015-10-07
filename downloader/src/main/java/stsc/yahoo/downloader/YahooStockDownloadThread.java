@@ -3,24 +3,21 @@ package stsc.yahoo.downloader;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.Set;
 
-import com.google.common.collect.Sets;
-
-import stsc.common.service.statistics.StatisticType;
 import stsc.common.service.statistics.DownloaderLogger;
+import stsc.common.service.statistics.StatisticType;
 import stsc.common.stocks.UnitedFormatStock;
 import stsc.yahoo.YahooDatafeedSettings;
+import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;
 import stsc.yahoo.liquiditator.StockFilter;
 
-class DownloadYahooStockThread implements Runnable {
-
-	private static final Set<String> bannedNames = Sets.newHashSet("aux");
+class YahooStockDownloadThread implements Runnable {
 
 	private static final int printEach = 100;
 
 	private final YahooDatafeedSettings settings;
+	private final YahooStockNames yahooStockNames;
 	private final StockFilter stockFilter;
 	private int solvedAmount = 0;
 	private boolean deleteFilteredData = true;
@@ -30,30 +27,27 @@ class DownloadYahooStockThread implements Runnable {
 
 	private final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
 
-	DownloadYahooStockThread(DownloaderLogger logger, YahooDatafeedSettings settings) {
-		this.logger = logger;
-		this.settings = settings;
-		this.stockFilter = new StockFilter();
+	YahooStockDownloadThread(DownloaderLogger logger, YahooDatafeedSettings settings, final YahooStockNames yahooStockNames) {
+		this(logger, settings, yahooStockNames, true);
 	}
 
-	DownloadYahooStockThread(DownloaderLogger logger, YahooDatafeedSettings settings, boolean deleteFilteredData) {
+	YahooStockDownloadThread(DownloaderLogger logger, YahooDatafeedSettings settings, final YahooStockNames yahooStockNames, boolean deleteFilteredData) {
 		this.logger = logger;
 		this.settings = settings;
+		this.yahooStockNames = yahooStockNames;
 		this.stockFilter = new StockFilter();
 		this.deleteFilteredData = deleteFilteredData;
 	}
 
 	public void run() {
-		String filesystemStockName = settings.getFilesystemStockName();
+		String filesystemStockName = yahooStockNames.getNextStockName();
 		while (filesystemStockName != null) {
-			if (!bannedNames.contains(filesystemStockName)) {
-				downloadMarketDatafeedStock(filesystemStockName);
-				increaseDownloadStatistics(filesystemStockName);
-				if (stopped) {
-					break;
-				}
+			downloadMarketDatafeedStock(filesystemStockName);
+			increaseDownloadStatistics(filesystemStockName);
+			if (stopped) {
+				break;
 			}
-			filesystemStockName = settings.getFilesystemStockName();
+			filesystemStockName = yahooStockNames.getNextStockName();
 		}
 	}
 

@@ -3,18 +3,18 @@ package stsc.yahoo.downloader;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
+import stsc.yahoo.YahooStockNames;
 
 public final class YahooDownloadCourutine {
 
 	private final DownloaderLogger logger;
 
-	private final DownloadYahooStockThread downloadThread;
+	private YahooStockDownloadThread downloadThread;
 
 	private final int downloadThreadSize;
 	private final boolean downloadExisted;
@@ -41,26 +41,30 @@ public final class YahooDownloadCourutine {
 		this.downloadThreadSize = downloadThreadSize;
 		this.yahooStockNameListGenerator = new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl());
 
-		downloadThread = new DownloadYahooStockThread(logger, settings);
+		downloadThread = new YahooStockDownloadThread(logger, settings, new YahooStockNames.Builder().build());
 	}
 
 	public void start() throws InterruptedException {
 		logger.log().trace("starting");
-		fillStockListFromBusinessIndexes(settings.getFilesystemStockNamesQueue());
+		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
+		fillStockListFromBusinessIndexes(yahooStockNamesBuilder);
 		if (downloadExisted) {
-			YahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()),
-					settings.getFilesystemStockNamesQueue());
+			yahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()), //
+					yahooStockNamesBuilder);
 		} else {
 			if (downloadByPattern) {
-				yahooStockNameListGenerator.fillWithBeginEndPatterns(startPattern, endPattern, settings.getFilesystemStockNamesQueue());
+				yahooStockNameListGenerator.fillWithBeginEndPatterns(startPattern, endPattern, yahooStockNamesBuilder);
 			} else {
-				yahooStockNameListGenerator.fillWithStockNameLength(stockNameMinLength, stockNameMaxLength, settings.getFilesystemStockNamesQueue());
+				yahooStockNameListGenerator.fillWithStockNameLength(stockNameMinLength, stockNameMaxLength, yahooStockNamesBuilder);
 			}
 		}
 		if (stopped) {
 			return;
 		}
-		logger.log().trace("tasks size: {}", settings.taskQueueSize());
+		final YahooStockNames yahooStockNames = yahooStockNamesBuilder.build();
+		logger.log().trace("tasks size: {}", yahooStockNames.size());
+		downloadThread = new YahooStockDownloadThread(logger, settings, yahooStockNames);
+
 		final List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0; i < downloadThreadSize; ++i) {
 			final Thread newThread = new Thread(downloadThread);
@@ -76,8 +80,8 @@ public final class YahooDownloadCourutine {
 		logger.log().trace("finishing");
 	}
 
-	private void fillStockListFromBusinessIndexes(Queue<String> filesystemStockNamesQueue) {
-		yahooStockNameListGenerator.fillWithIndexesFromBase(filesystemStockNamesQueue);
+	private void fillStockListFromBusinessIndexes(final YahooStockNames.Builder builder) {
+		yahooStockNameListGenerator.fillWithIndexesFromBase(builder);
 	}
 
 	public void stop() throws Exception {

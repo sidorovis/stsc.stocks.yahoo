@@ -11,8 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
+import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
+import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;
 
 final class DownloadedStockFilter {
@@ -21,10 +23,8 @@ final class DownloadedStockFilter {
 		System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "./config/log4j2.xml");
 	}
 
-	static int processThreadSize = 8;
+	private static int processThreadSize = 8;
 	private static Logger logger = LogManager.getLogger("DownloadedStockFilter");
-
-	static YahooDatafeedSettings settings;
 
 	private void readProperties() throws IOException {
 		FileInputStream in = new FileInputStream("./config/liquiditator.ini");
@@ -40,14 +40,16 @@ final class DownloadedStockFilter {
 		readProperties();
 
 		logger.trace("downloaded stock filter started");
-		settings = YahooUtils.createSettings();
-		YahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()),
-				settings.getFilesystemStockNamesQueue());
-		logger.trace("collected stock names to start filter process: {}", settings.taskQueueSize());
+		final YahooDatafeedSettings settings = YahooUtils.createSettings();
+		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
+		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()),
+				yahooStockNamesBuilder);
+		final YahooStockNames yahooStockNames = yahooStockNamesBuilder.build();
+		logger.trace("collected stock names to start filter process: {}", yahooStockNames);
 
 		List<Thread> threads = new ArrayList<Thread>();
 
-		FilterThread filterThread = new FilterThread(settings);
+		FilterThread filterThread = new FilterThread(settings, yahooStockNames);
 
 		for (int i = 0; i < processThreadSize; ++i) {
 			Thread newThread = new Thread(filterThread);

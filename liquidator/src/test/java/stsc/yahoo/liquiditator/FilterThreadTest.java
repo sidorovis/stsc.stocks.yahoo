@@ -8,16 +8,17 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import stsc.yahoo.YahooDatafeedSettings;
+import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;
 
 public class FilterThreadTest {
-	
+
 	@Test
 	public void testFilterThread() throws IOException, InterruptedException {
-		YahooDatafeedSettings settings = YahooUtils.createSettings("./test_data/", "./test/");
-		settings.addTask("aaoi").addTask("aapl").addTask("ibm").addTask("spy");
+		final YahooDatafeedSettings settings = YahooUtils.createSettings("./test_data/", "./test/");
+		final YahooStockNames yahooStockNames = new YahooStockNames.Builder().add("aaoi").add("aapl").add("ibm").add("spy").build();
 
-		FilterThread filterThread = new FilterThread(settings, new LocalDate(2014, 1, 14).toDate());
+		FilterThread filterThread = new FilterThread(settings, yahooStockNames, new LocalDate(2014, 1, 14).toDate());
 		{
 			Thread th = new Thread(filterThread);
 			th.start();

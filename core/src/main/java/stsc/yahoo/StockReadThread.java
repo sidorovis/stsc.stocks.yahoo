@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Optional;
 
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.UnitedFormatStock;
 
 class StockReadThread implements Runnable {
 
 	private final YahooDatafeedSettings settings;
+	private final YahooStockNames yahooStockNames;
 	private final List<LoadStockReceiver> receivers = Collections.synchronizedList(new ArrayList<LoadStockReceiver>());
 
-	public StockReadThread(YahooDatafeedSettings settings) {
+	public StockReadThread(final YahooDatafeedSettings settings, final YahooStockNames yahooStockNames) {
 		this.settings = settings;
+		this.yahooStockNames = yahooStockNames;
 	}
 
 	public void addReceiver(final LoadStockReceiver receiver) {
@@ -27,14 +28,13 @@ class StockReadThread implements Runnable {
 
 	@Override
 	public void run() {
-		String task = settings.getFilesystemStockName();
+		String task = yahooStockNames.getNextStockName();
 		while (task != null) {
 			final Optional<? extends Stock> s = settings.getStockFromFileSystem(task);
-			task = UnitedFormatStock.fromFilesystem(task);
 			if (s.isPresent()) {
 				updateReceivers(s.get());
 			}
-			task = settings.getFilesystemStockName();
+			task = yahooStockNames.getNextStockName();
 		}
 	}
 
