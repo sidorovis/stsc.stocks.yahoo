@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+import stsc.common.stocks.UnitedFormatFilename;
+import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 
 public class YahooDatafeedSettings {
@@ -25,14 +27,14 @@ public class YahooDatafeedSettings {
 		}
 	}
 
-	public String generateUniteFormatPath(String filesystemName) {
-		return UnitedFormatStock.generatePath(dataFolder, filesystemName);
+	public String generateUniteFormatPath(final UnitedFormatFilename unitedFormatFilename) {
+		return UnitedFormatHelper.generatePath(dataFolder, unitedFormatFilename);
 	}
 
-	public Optional<UnitedFormatStock> getStockFromFileSystem(String filesystemName) {
+	public Optional<UnitedFormatStock> getStockFromFileSystem(final UnitedFormatFilename unitedFormatFilename) {
 		UnitedFormatStock s = null;
 		try {
-			s = UnitedFormatStock.readFromUniteFormatFile(generateUniteFormatPath(filesystemName));
+			s = UnitedFormatStock.readFromUniteFormatFile(generateUniteFormatPath(unitedFormatFilename));
 		} catch (Exception e) {
 		}
 		return Optional.ofNullable(s);

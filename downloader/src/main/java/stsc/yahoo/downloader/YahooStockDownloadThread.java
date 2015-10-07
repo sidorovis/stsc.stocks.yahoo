@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.common.service.statistics.StatisticType;
+import stsc.common.stocks.UnitedFormatFilename;
+import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
@@ -40,39 +42,40 @@ class YahooStockDownloadThread implements Runnable {
 	}
 
 	public void run() {
-		String filesystemStockName = yahooStockNames.getNextStockName();
-		while (filesystemStockName != null) {
-			downloadMarketDatafeedStock(filesystemStockName);
-			increaseDownloadStatistics(filesystemStockName);
+		String instrumentStockName = yahooStockNames.getNextStockName();
+		while (instrumentStockName != null) {
+			downloadMarketDatafeedStock(instrumentStockName);
+			increaseDownloadStatistics(instrumentStockName);
 			if (stopped) {
 				break;
 			}
-			filesystemStockName = yahooStockNames.getNextStockName();
+			instrumentStockName = yahooStockNames.getNextStockName();
 		}
 	}
 
-	private void downloadMarketDatafeedStock(String filesystemStockName) {
+	private void downloadMarketDatafeedStock(final String instrumentStockName) {
+		final UnitedFormatFilename filename = UnitedFormatHelper.toFilesystem(instrumentStockName);
 		try {
-			Optional<UnitedFormatStock> s = settings.getStockFromFileSystem(filesystemStockName);
+			Optional<UnitedFormatStock> s = settings.getStockFromFileSystem(filename);
 			boolean downloaded = false;
 			if (!s.isPresent()) {
-				s = yahooDownloadHelper.download(filesystemStockName);
+				s = yahooDownloadHelper.download(instrumentStockName);
 				if (s.isPresent()) {
 					s.get().storeUniteFormatToFolder(settings.getDataFolder());
 				}
 				downloaded = true;
-				logger.log(StatisticType.TRACE, "task fully downloaded: " + filesystemStockName);
+				logger.log(StatisticType.TRACE, "task fully downloaded: " + instrumentStockName);
 			} else {
-				downloaded = partiallDownload(filesystemStockName, s);
+				downloaded = partiallDownload(instrumentStockName, s);
 			}
 			if (downloaded) {
-				processDownloadedStock(filesystemStockName, s);
+				processDownloadedStock(instrumentStockName, s);
 			} else {
-				logger.log(StatisticType.INFO, "task is considered as downloaded: " + filesystemStockName);
+				logger.log(StatisticType.INFO, "task is considered as downloaded: " + instrumentStockName);
 			}
 		} catch (Exception e) {
-			logger.log(StatisticType.TRACE, "task " + filesystemStockName + " throwed an exception: " + e.toString());
-			final File file = new File(getPath(settings.getDataFolder(), filesystemStockName));
+			logger.log(StatisticType.TRACE, "task " + instrumentStockName + " throwed an exception: " + e.toString());
+			final File file = new File(UnitedFormatHelper.generatePath(settings.getDataFolder(), filename));
 			if (file.length() == 0)
 				file.delete();
 		}
@@ -86,34 +89,30 @@ class YahooStockDownloadThread implements Runnable {
 		}
 	}
 
-	private boolean partiallDownload(String filesystemStockName, Optional<UnitedFormatStock> s) throws InterruptedException, IOException {
+	private boolean partiallDownload(String instrumentStockName, Optional<UnitedFormatStock> s) throws InterruptedException, IOException {
 		boolean downloaded;
 		downloaded = yahooDownloadHelper.partiallyDownload(s.get());
 		if (downloaded) {
 			s.get().storeUniteFormatToFolder(settings.getDataFolder());
 		}
-		logger.log(StatisticType.TRACE, "task partially downloaded: " + filesystemStockName);
+		logger.log(StatisticType.TRACE, "task partially downloaded: " + instrumentStockName);
 		return downloaded;
 	}
 
-	private void processDownloadedStock(String filesystemStockName, Optional<UnitedFormatStock> s) throws IOException {
+	private void processDownloadedStock(String instrumentStockName, Optional<UnitedFormatStock> s) throws IOException {
 		final boolean filtered = stockFilter.isLiquid(s.get()) && stockFilter.isValid(s.get());
 		if (filtered) {
 			YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), s.get().getInstrumentName());
-			logger.log(StatisticType.INFO, "task is liquid and copied to filter stock directory: " + filesystemStockName);
+			logger.log(StatisticType.INFO, "task is liquid and copied to filter stock directory: " + s.get().getFilesystemName());
 		} else {
-			final boolean deleted = yahooDownloadHelper.deleteFilteredFile(deleteFilteredData, settings.getFilteredDataFolder(), filesystemStockName);
+			final boolean deleted = yahooDownloadHelper.deleteFilteredFile(deleteFilteredData, settings.getFilteredDataFolder(), s.get().getFilesystemName());
 			if (deleted) {
-				logger.log(StatisticType.DEBUG, "deleting filtered file with stock " + filesystemStockName + " it doesn't pass new liquidity filter tests");
+				logger.log(StatisticType.DEBUG, "deleting filtered file with stock " + s.get().getFilesystemName() + " it doesn't pass new liquidity filter tests");
 			}
 		}
 	}
 
 	public void stop() {
 		stopped = true;
-	}
-
-	private static String getPath(String folder, String taskName) {
-		return YahooDownloadHelper.getPath(folder, taskName);
 	}
 }

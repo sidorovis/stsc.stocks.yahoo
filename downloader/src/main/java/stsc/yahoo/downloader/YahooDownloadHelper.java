@@ -12,23 +12,24 @@ import java.util.Optional;
 
 import org.joda.time.LocalDate;
 
-import stsc.common.Day;
-import stsc.common.stocks.UnitedFormatStock;
-
 import com.google.common.io.CharStreams;
+
+import stsc.common.Day;
+import stsc.common.stocks.UnitedFormatFilename;
+import stsc.common.stocks.UnitedFormatHelper;
+import stsc.common.stocks.UnitedFormatStock;
 
 public final class YahooDownloadHelper {
 
 	private static final int waitTriesAmount = 5;
 	private static final int waitTimeBetweenTries = 500;
 
-	public final Optional<UnitedFormatStock> download(String filesystemStockName) throws InterruptedException {
+	public final Optional<UnitedFormatStock> download(final String instrumentName) throws InterruptedException {
 		int tries = 0;
 		String error = "";
 		UnitedFormatStock newStock = null;
 		while (tries < waitTriesAmount) {
 			try {
-				final String instrumentName = UnitedFormatStock.fromFilesystem(filesystemStockName);
 				final URL url = new URL("http://ichart.finance.yahoo.com/table.csv?s=" + instrumentName);
 				final String stockContent = CharStreams.toString(new InputStreamReader(url.openStream()));
 				newStock = UnitedFormatStock.newFromString(instrumentName, stockContent);
@@ -41,7 +42,7 @@ public final class YahooDownloadHelper {
 			tries += 1;
 			Thread.sleep(waitTimeBetweenTries);
 		}
-		throw new InterruptedException(waitTriesAmount + " tries not enought to download data on " + filesystemStockName + " stock. " + error);
+		throw new InterruptedException(waitTriesAmount + " tries not enought to download data on " + instrumentName + " stock. " + error);
 	}
 
 	/**
@@ -102,9 +103,9 @@ public final class YahooDownloadHelper {
 		return "http://ichart.yahoo.com/table.csv?s=" + stock.getInstrumentName() + "&a=" + month + "&b=" + day + "&c=" + year;
 	}
 
-	public boolean deleteFilteredFile(boolean deleteFilteredData, String filteredDataFolder, String stockName) {
+	public boolean deleteFilteredFile(final boolean deleteFilteredData, final String filteredDataFolder, final UnitedFormatFilename filename) {
 		if (deleteFilteredData) {
-			String filteredFilePath = getPath(filteredDataFolder, stockName);
+			String filteredFilePath = UnitedFormatHelper.generatePath(filteredDataFolder, filename);
 			File filteredFile = new File(filteredFilePath);
 			if (filteredFile.exists()) {
 				filteredFile.delete();
@@ -112,10 +113,6 @@ public final class YahooDownloadHelper {
 			}
 		}
 		return false;
-	}
-
-	public static String getPath(String folder, String taskName) {
-		return UnitedFormatStock.generatePath(folder, taskName);
 	}
 
 }

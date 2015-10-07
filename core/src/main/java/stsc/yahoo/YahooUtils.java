@@ -5,16 +5,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import stsc.common.stocks.UnitedFormatStock;
+import stsc.common.stocks.UnitedFormatFilename;
+import stsc.common.stocks.UnitedFormatHelper;
 
-public class YahooUtils {
+public final class YahooUtils {
 
 	private YahooUtils() {
 	}
 
-	public static void copyFilteredStockFile(String dataFolder, String filteredDataFolder, String filesystemName) throws IOException {
-		final File originalFile = new File(UnitedFormatStock.generatePath(dataFolder, filesystemName));
-		final File filteredFile = new File(UnitedFormatStock.generatePath(filteredDataFolder, filesystemName));
+	public static void copyFilteredStockFile(String dataFolder, String filteredDataFolder, String instrumentName) throws IOException {
+		final UnitedFormatFilename filename = UnitedFormatHelper.toFilesystem(instrumentName);
+		final File originalFile = new File(UnitedFormatHelper.generatePath(dataFolder, filename));
+		final File filteredFile = new File(UnitedFormatHelper.generatePath(filteredDataFolder, filename));
 		if (filteredFile.exists() && originalFile.exists() && filteredFile.length() == originalFile.length()) {
 			// filteter file exists and have the same size, so do nothing
 		} else

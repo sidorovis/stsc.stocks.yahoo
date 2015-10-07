@@ -1,13 +1,12 @@
 package stsc.yahoo;
 
-import static stsc.common.stocks.UnitedFormatStock.EXTENSION;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 import stsc.stocks.indexes.MarketIndex;
 import stsc.stocks.repo.MetaIndicesRepository;
@@ -54,7 +53,7 @@ public final class YahooStockNameListGenerator {
 
 	private <E extends MarketIndex<E>> void addAll(List<E> countryMarketIndices, final YahooStockNames.Builder stockNames) {
 		for (E i : countryMarketIndices) {
-			stockNames.add(i.getFilesystemName());
+			stockNames.add(i.getInstrumentName());
 		}
 	}
 
@@ -72,9 +71,9 @@ public final class YahooStockNameListGenerator {
 		final File[] listOfFiles = folder.listFiles();
 		Arrays.sort(listOfFiles, new FileComparator());
 		for (File file : listOfFiles) {
-			String filename = file.getName();
-			if (file.isFile() && filename.endsWith(EXTENSION)) {
-				t.add(filename.substring(0, filename.length() - EXTENSION.length()));
+			final String filename = file.getName();
+			if (file.isFile() && filename.startsWith("_") && filename.endsWith(UnitedFormatHelper.getExtension())) {
+				t.add(filename.substring(1, filename.length() - UnitedFormatHelper.getExtension().length()));
 			}
 		}
 		return t;
@@ -88,7 +87,7 @@ public final class YahooStockNameListGenerator {
 
 		private String getStockName(File file) {
 			String filename = file.getName();
-			filename = filename.substring(0, filename.length() - EXTENSION.length());
+			filename = filename.substring(0, filename.length() - UnitedFormatHelper.getExtension().length());
 			return filename;
 		}
 	}

@@ -17,13 +17,4 @@ public class YahooStockNamesTest {
 		Assert.assertEquals(yahooStockNames.getNextStockName(), null);
 	}
 
-	@Test
-	public void testYahooStockNamesBannedNames() {
-		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
-		Assert.assertEquals(yahooStockNamesBuilder.build().getNextStockName(), null);
-		yahooStockNamesBuilder.add("aux").add("AUX").add("COM1").add("NuL");
-		final YahooStockNames yahooStockNames = yahooStockNamesBuilder.build();
-		Assert.assertEquals(0, yahooStockNames.size());
-	}
-
 }

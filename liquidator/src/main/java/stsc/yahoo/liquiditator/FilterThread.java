@@ -9,11 +9,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.UnitedFormatStock;
+import stsc.common.stocks.UnitedFormatFilename;
+import stsc.common.stocks.UnitedFormatHelper;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;
-import stsc.yahoo.liquiditator.StockFilter;
 
 class FilterThread implements Runnable {
 
@@ -36,27 +36,28 @@ class FilterThread implements Runnable {
 
 	@Override
 	public void run() {
-		String filesystemStockName = yahooStockNames.getNextStockName();
-		while (filesystemStockName != null) {
+		String instrumentStockName = yahooStockNames.getNextStockName();
+		while (instrumentStockName != null) {
 			try {
-				Optional<? extends Stock> s = settings.getStockFromFileSystem(filesystemStockName);
+				final UnitedFormatFilename filename = UnitedFormatHelper.toFilesystem(instrumentStockName);
+				Optional<? extends Stock> s = settings.getStockFromFileSystem(filename);
 				if (s.isPresent() && stockFilter.isLiquid(s.get()) && stockFilter.isValid(s.get())) {
-					YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), filesystemStockName);
-					logger.trace("stock " + filesystemStockName + " liquid");
+					YahooUtils.copyFilteredStockFile(settings.getDataFolder(), settings.getFilteredDataFolder(), instrumentStockName);
+					logger.trace("stock " + instrumentStockName + " liquid");
 				} else {
-					deleteIfExisted(filesystemStockName);
+					deleteIfExisted(filename);
 				}
 			} catch (IOException e) {
-				logger.trace("binary file " + filesystemStockName + " processing throw IOException: " + e.toString());
+				logger.trace("binary file " + instrumentStockName + " processing throw IOException: " + e.toString());
 			}
-			filesystemStockName = yahooStockNames.getNextStockName();
+			instrumentStockName = yahooStockNames.getNextStockName();
 		}
 	}
 
-	private void deleteIfExisted(String stockName) {
-		final File file = new File(UnitedFormatStock.generatePath(settings.getFilteredDataFolder(), stockName));
+	private void deleteIfExisted(final UnitedFormatFilename filename) {
+		final File file = new File(UnitedFormatHelper.generatePath(settings.getFilteredDataFolder(), filename));
 		if (file.exists()) {
-			logger.debug("deleting filtered file with stock " + stockName + " it doesn't pass new liquidity filter tests");
+			logger.debug("deleting filtered file with stock " + filename.getFilename() + " it doesn't pass new liquidity filter tests");
 			file.delete();
 		}
 	}

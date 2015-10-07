@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import stsc.common.stocks.Stock;
+import stsc.common.stocks.UnitedFormatHelper;
 
 class StockReadThread implements Runnable {
 
@@ -30,7 +31,7 @@ class StockReadThread implements Runnable {
 	public void run() {
 		String task = yahooStockNames.getNextStockName();
 		while (task != null) {
-			final Optional<? extends Stock> s = settings.getStockFromFileSystem(task);
+			final Optional<? extends Stock> s = settings.getStockFromFileSystem(UnitedFormatHelper.toFilesystem(task));
 			if (s.isPresent()) {
 				updateReceivers(s.get());
 			}

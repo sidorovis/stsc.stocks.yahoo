@@ -1,6 +1,9 @@
 package stsc.yahoo;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,9 +25,10 @@ public class YahooStockNameListGeneratorTest {
 	}
 
 	@Test
-	public void fillWithExistedFilesFromFolder() {
+	public void fillWithExistedFilesFromFolder() throws URISyntaxException {
 		final YahooStockNames.Builder bForExisted = new YahooStockNames.Builder();
-		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath("./test_data"), bForExisted);
+		final Path folderPath = FileSystems.getDefault().getPath(new File(YahooStockNameListGeneratorTest.class.getResource("./").toURI()).getAbsolutePath());
+		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(folderPath, bForExisted);
 		Assert.assertEquals(4, bForExisted.build().size());
 		Assert.assertEquals("aaae", bForExisted.build().getNextStockName());
 	}

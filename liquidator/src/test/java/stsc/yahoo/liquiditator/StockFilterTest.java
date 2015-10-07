@@ -1,6 +1,10 @@
 package stsc.yahoo.liquiditator;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
 
@@ -11,37 +15,42 @@ import org.junit.Test;
 import stsc.common.Day;
 import stsc.common.stocks.MemoryStock;
 import stsc.common.stocks.Stock;
+import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 import stsc.yahoo.liquiditator.StockFilter;
 
 public class StockFilterTest {
 
+	final private Path resourceToPath(final String resourcePath) throws URISyntaxException {
+		return FileSystems.getDefault().getPath(new File(StockFilterTest.class.getResource(resourcePath).toURI()).getAbsolutePath());
+	}
+
 	@Test
-	public void testStockFilter() throws IOException, ParseException, ClassNotFoundException {
+	public void testStockFilter() throws IOException, ParseException, ClassNotFoundException, URISyntaxException {
 
 		final StockFilter stockFilter = new StockFilter(new LocalDate(2013, 1, 13).toDate());
-		Stock s1 = UnitedFormatStock.readFromCsvFile("ibm", "./test_data/ibm.csv");
+		Stock s1 = UnitedFormatStock.readFromCsvFile("ibm", resourceToPath("ibm.csv").toString());
 		Assert.assertEquals(true, stockFilter.isLiquid(s1));
-		Stock s2 = UnitedFormatStock.readFromCsvFile("anse", "./test_data/anse.csv");
+		Stock s2 = UnitedFormatStock.readFromCsvFile("anse", resourceToPath("anse.csv").toString());
 		Assert.assertEquals(false, stockFilter.isLiquid(s2));
 
 		final StockFilter stockFilter2 = new StockFilter(new LocalDate(2014, 2, 10).toDate());
 
-		Stock s3 = UnitedFormatStock.readFromUniteFormatFile("./test_data/aapl.uf");
+		Stock s3 = UnitedFormatStock.readFromUniteFormatFile(resourceToPath(UnitedFormatHelper.toFilesystem("aapl").getFilename()).toString());
 		Assert.assertEquals(true, stockFilter2.isLiquid(s3));
 
-		Stock s4 = UnitedFormatStock.readFromUniteFormatFile("./test_data/spy.uf");
+		Stock s4 = UnitedFormatStock.readFromUniteFormatFile(resourceToPath(UnitedFormatHelper.toFilesystem("spy").getFilename()).toString());
 		Assert.assertEquals(true, stockFilter2.isLiquid(s4));
 
-		Stock s5 = UnitedFormatStock.readFromUniteFormatFile("./test_data/aaae.uf");
+		Stock s5 = UnitedFormatStock.readFromUniteFormatFile(resourceToPath(UnitedFormatHelper.toFilesystem("aaae").getFilename()).toString());
 		Assert.assertEquals(false, stockFilter2.isLiquid(s5));
 	}
 
 	@Test
-	public void testLast10Year() throws IOException {
+	public void testLast10Year() throws IOException, URISyntaxException {
 		final StockFilter stockFilter = new StockFilter(new LocalDate(2014, 2, 10).toDate());
 
-		final Stock aapl = UnitedFormatStock.readFromUniteFormatFile("./test_data/aapl.uf");
+		final Stock aapl = UnitedFormatStock.readFromUniteFormatFile(resourceToPath(UnitedFormatHelper.toFilesystem("aapl").getFilename()).toString());
 		final ArrayList<Day> copyFromDays = aapl.getDays();
 
 		final MemoryStock smallappl = new MemoryStock("smallaapl");
@@ -67,9 +76,9 @@ public class StockFilterTest {
 	}
 
 	@Test
-	public void testIsValid() throws IOException {
+	public void testIsValid() throws IOException, URISyntaxException {
 		final StockFilter stockFilter = new StockFilter(new LocalDate(2014, 5, 17).toDate());
-		final Stock aapl = UnitedFormatStock.readFromUniteFormatFile("./test_data/aapl.uf");
+		final Stock aapl = UnitedFormatStock.readFromUniteFormatFile(resourceToPath(UnitedFormatHelper.toFilesystem("aapl").getFilename()).toString());
 		Assert.assertEquals(false, stockFilter.isValid(aapl));
 		final StockFilter stockFilterForApril = new StockFilter(new LocalDate(2014, 3, 17).toDate());
 		Assert.assertEquals(true, stockFilterForApril.isValid(aapl));
