@@ -1,7 +1,6 @@
 package stsc.yahoo;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,10 +14,7 @@ import stsc.common.stocks.StockLock;
 import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.storage.ThreadSafeStockStorage;
 
-public class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver {
-
-	public static final String DATA_FOLDER = "./data/";
-	public static final String FILTER_DATA_FOLDER = "./filtered_data/";
+public final class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver {
 
 	static {
 		System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "./config/log4j2.xml");
@@ -32,33 +28,11 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 	private final List<Thread> threads = new ArrayList<Thread>();
 	private final List<LoadStockReceiver> receivers = Collections.synchronizedList(new ArrayList<LoadStockReceiver>());
 
-	public YahooFileStockStorage(YahooDatafeedSettings settings) throws ClassNotFoundException, IOException {
+	public YahooFileStockStorage(final YahooDatafeedSettings settings, boolean autoStart) throws ClassNotFoundException, IOException {
 		super();
 		this.settings = settings;
-		loadStocksFromFileSystem(true);
-
-	}
-
-	public YahooFileStockStorage() throws ClassNotFoundException, IOException {
-		this(DATA_FOLDER, FILTER_DATA_FOLDER);
-	}
-
-	public static YahooFileStockStorage forData(String dataFolder) throws ClassNotFoundException, IOException {
-		return new YahooFileStockStorage(dataFolder, FILTER_DATA_FOLDER);
-	}
-
-	public static YahooFileStockStorage forFilteredData(String dataFilterFolder) throws ClassNotFoundException, IOException {
-		return new YahooFileStockStorage(DATA_FOLDER, dataFilterFolder);
-	}
-
-	public YahooFileStockStorage(String dataFolder, String filteredDataFolder) throws ClassNotFoundException, IOException {
-		this(dataFolder, filteredDataFolder, true);
-	}
-
-	public YahooFileStockStorage(String dataFolder, String filteredDataFolder, boolean autoStart) throws ClassNotFoundException, IOException {
-		super();
-		this.settings = new YahooDatafeedSettings(dataFolder, filteredDataFolder);
 		loadStocksFromFileSystem(autoStart);
+
 	}
 
 	public void addReceiver(LoadStockReceiver receiver) {
@@ -76,8 +50,7 @@ public class YahooFileStockStorage extends ThreadSafeStockStorage implements Loa
 
 	private YahooStockNames loadFilteredDatafeed() {
 		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
-		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getFilteredDataFolder()),
-				yahooStockNamesBuilder);
+		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(settings.getFilteredDataFolder(), yahooStockNamesBuilder);
 		return yahooStockNamesBuilder.build();
 	}
 

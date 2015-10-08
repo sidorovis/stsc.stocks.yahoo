@@ -3,6 +3,8 @@ package stsc.yahoo;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,13 +15,13 @@ public class YahooFileStockStorageTest {
 
 	private static StockStorage stockStorage = null;
 
-	final static private String resourceToPath(final String resourcePath) throws URISyntaxException {
-		return new File(YahooFileStockStorageTest.class.getResource(resourcePath).toURI()).getAbsolutePath();
+	final static private Path resourceToPath(final String resourcePath) throws URISyntaxException {
+		return FileSystems.getDefault().getPath(new File(YahooFileStockStorageTest.class.getResource(resourcePath).toURI()).getAbsolutePath());
 	}
 
 	private static synchronized StockStorage getStockStorage() throws ClassNotFoundException, IOException, InterruptedException, URISyntaxException {
 		if (stockStorage == null) {
-			final YahooFileStockStorage ss = new YahooFileStockStorage(resourceToPath("./"), resourceToPath("./"));
+			final YahooFileStockStorage ss = new YahooFileStockStorage(new YahooDatafeedSettings(resourceToPath("./"), resourceToPath("./")), true);
 			ss.waitForLoad();
 			stockStorage = ss;
 		}

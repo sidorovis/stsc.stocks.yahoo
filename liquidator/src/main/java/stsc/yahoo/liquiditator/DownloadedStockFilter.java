@@ -2,7 +2,6 @@ package stsc.yahoo.liquiditator;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -15,7 +14,6 @@ import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
 import stsc.yahoo.YahooStockNames;
-import stsc.yahoo.YahooUtils;
 
 final class DownloadedStockFilter {
 
@@ -40,10 +38,9 @@ final class DownloadedStockFilter {
 		readProperties();
 
 		logger.trace("downloaded stock filter started");
-		final YahooDatafeedSettings settings = YahooUtils.createSettings();
+		final YahooDatafeedSettings settings = new YahooDatafeedSettings();
 		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
-		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()),
-				yahooStockNamesBuilder);
+		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(settings.getDataFolder(), yahooStockNamesBuilder);
 		final YahooStockNames yahooStockNames = yahooStockNamesBuilder.build();
 		logger.trace("collected stock names to start filter process: {}", yahooStockNames);
 

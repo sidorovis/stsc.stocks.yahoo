@@ -15,21 +15,20 @@ import org.junit.rules.TemporaryFolder;
 import stsc.common.stocks.UnitedFormatHelper;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
-import stsc.yahoo.YahooUtils;
 
 public class FilterThreadTest {
 
 	@Rule
 	public TemporaryFolder testFolder = new TemporaryFolder();
 
-	final private String resourceToPath(final String resourcePath) throws URISyntaxException {
-		return new File(FilterThreadTest.class.getResource(resourcePath).toURI()).getAbsolutePath();
+	final private Path resourceToPath(final String resourcePath) throws URISyntaxException {
+		return FileSystems.getDefault().getPath(new File(FilterThreadTest.class.getResource(resourcePath).toURI()).getAbsolutePath());
 	}
 
 	@Test
 	public void testFilterThread() throws IOException, InterruptedException, URISyntaxException {
 		final Path testPath = FileSystems.getDefault().getPath(testFolder.getRoot().getAbsolutePath());
-		final YahooDatafeedSettings settings = YahooUtils.createSettings(resourceToPath("./"), testPath.toString());
+		final YahooDatafeedSettings settings = new YahooDatafeedSettings(resourceToPath("./"), testPath);
 		final YahooStockNames yahooStockNames = new YahooStockNames.Builder().add("aaoi").add("aapl").add("ibm").add("spy").build();
 
 		final FilterThread filterThread = new FilterThread(settings, yahooStockNames, new LocalDate(2014, 1, 14).toDate());

@@ -75,7 +75,7 @@ class YahooStockDownloadThread implements Runnable {
 			}
 		} catch (Exception e) {
 			logger.log(StatisticType.TRACE, "task " + instrumentStockName + " throwed an exception: " + e.toString());
-			final File file = new File(UnitedFormatHelper.generatePath(settings.getDataFolder(), filename));
+			final File file = settings.getDataFolder().resolve(filename.getFilename()).toFile();
 			if (file.length() == 0)
 				file.delete();
 		}

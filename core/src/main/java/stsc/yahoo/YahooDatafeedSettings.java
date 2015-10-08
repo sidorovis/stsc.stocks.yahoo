@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import stsc.common.stocks.UnitedFormatFilename;
-import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 
 /**
@@ -18,41 +18,54 @@ import stsc.common.stocks.UnitedFormatStock;
  */
 public final class YahooDatafeedSettings {
 
-	private final String dataFolder;
-	private final String filteredDataFolder;
+	public static final String DATA_FOLDER = "./data/";
+	public static final String FILTER_DATA_FOLDER = "./filtered_data/";
 
-	public YahooDatafeedSettings(String dataFolder, String filteredDataFolder) throws IOException {
-		this.dataFolder = checkFolder(dataFolder, "Bad data folder");
-		this.filteredDataFolder = checkFolder(filteredDataFolder, "Bad filtered data folder");
+	private final Path dataFolder;
+	private final Path filteredDataFolder;
+
+	/**
+	 * by default it use {@link #DATA_FOLDER}, {@link #FILTER_DATA_FOLDER}
+	 * 
+	 * @throws IOException
+	 */
+	public YahooDatafeedSettings() throws IOException {
+		this(Paths.get("./").resolve(DATA_FOLDER), Paths.get("./").resolve(FILTER_DATA_FOLDER));
 	}
 
-	private static String checkFolder(final String dataFolder, final String message) throws IOException {
-		final File dataFolderFile = new File(dataFolder);
+	public YahooDatafeedSettings(final Path dataFolder, final Path filteredDataFolder) throws IOException {
+		this.dataFolder = dataFolder;
+		this.filteredDataFolder = filteredDataFolder;
+		checkFolder(dataFolder, "Bad data folder");
+		checkFolder(filteredDataFolder, "Bad filtered data folder");
+	}
+
+	private static void checkFolder(final Path dataFolder, final String message) throws IOException {
+		final File dataFolderFile = dataFolder.toFile();
 		if (dataFolderFile.exists() && dataFolderFile.isDirectory()) {
-			return dataFolderFile.getPath() + File.separatorChar;
 		} else {
 			throw new IOException(message + ": " + dataFolder);
 		}
 	}
 
-	String generateUniteFormatPath(final UnitedFormatFilename unitedFormatFilename) {
-		return UnitedFormatHelper.generatePath(dataFolder, unitedFormatFilename);
+	Path generateUniteFormatPath(final UnitedFormatFilename unitedFormatFilename) {
+		return dataFolder.resolve(unitedFormatFilename.getFilename());
 	}
 
 	public Optional<UnitedFormatStock> getStockFromFileSystem(final UnitedFormatFilename unitedFormatFilename) {
 		UnitedFormatStock s = null;
-		try (FileInputStream is = new FileInputStream(generateUniteFormatPath(unitedFormatFilename))) {
+		try (FileInputStream is = new FileInputStream(generateUniteFormatPath(unitedFormatFilename).toFile())) {
 			s = UnitedFormatStock.readFromUniteFormatFile(is);
 		} catch (Exception e) {
 		}
 		return Optional.ofNullable(s);
 	}
 
-	public String getDataFolder() {
+	public Path getDataFolder() {
 		return dataFolder;
 	}
 
-	public String getFilteredDataFolder() {
+	public Path getFilteredDataFolder() {
 		return filteredDataFolder;
 	}
 

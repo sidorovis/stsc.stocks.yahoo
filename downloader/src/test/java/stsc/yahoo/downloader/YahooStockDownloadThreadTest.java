@@ -19,7 +19,6 @@ import stsc.common.stocks.Stock;
 import stsc.common.stocks.UnitedFormatHelper;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
-import stsc.yahoo.YahooUtils;
 
 public class YahooStockDownloadThreadTest {
 
@@ -29,7 +28,7 @@ public class YahooStockDownloadThreadTest {
 	@Test
 	public void testDownloadThread() throws Exception {
 		final Path testPath = FileSystems.getDefault().getPath(testFolder.getRoot().getAbsolutePath());
-		final YahooDatafeedSettings settings = YahooUtils.createSettings(testPath.toString(), testPath.toString());
+		final YahooDatafeedSettings settings = new YahooDatafeedSettings(testPath, testPath);
 		final String fileName = UnitedFormatHelper.toFilesystem("aaoi").getFilename();
 		Files.copy(new File(YahooStockDownloadThreadTest.class.getResource(fileName).toURI()), testPath.resolve(fileName).toFile());
 		{
@@ -70,7 +69,7 @@ public class YahooStockDownloadThreadTest {
 	@Test
 	public void testDownloadThreadForDiffenetInstrumentNameFilesystemName() throws InterruptedException, IOException, ClassNotFoundException {
 		final Path testPath = FileSystems.getDefault().getPath(testFolder.getRoot().getAbsolutePath());
-		final YahooDatafeedSettings settings = YahooUtils.createSettings(testPath.toString(), testPath.toString());
+		final YahooDatafeedSettings settings = new YahooDatafeedSettings(testPath, testPath);
 		{
 			final YahooStockDownloadThread downloadThread = new YahooStockDownloadThread(Mockito.mock(DownloaderLogger.class), settings, //
 					new YahooStockNames.Builder().add("^ftse").build(), false);

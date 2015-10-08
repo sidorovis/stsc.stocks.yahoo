@@ -55,7 +55,7 @@ class FilterThread implements Runnable {
 	}
 
 	private void deleteIfExisted(final UnitedFormatFilename filename) {
-		final File file = new File(UnitedFormatHelper.generatePath(settings.getFilteredDataFolder(), filename));
+		final File file = settings.getFilteredDataFolder().resolve(filename.getFilename()).toFile();
 		if (file.exists()) {
 			logger.debug("deleting filtered file with stock " + filename.getFilename() + " it doesn't pass new liquidity filter tests");
 			file.delete();

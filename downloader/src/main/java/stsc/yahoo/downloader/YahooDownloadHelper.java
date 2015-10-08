@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,7 +17,6 @@ import com.google.common.io.CharStreams;
 
 import stsc.common.Day;
 import stsc.common.stocks.UnitedFormatFilename;
-import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 
 public final class YahooDownloadHelper {
@@ -103,10 +103,9 @@ public final class YahooDownloadHelper {
 		return "http://ichart.yahoo.com/table.csv?s=" + stock.getInstrumentName() + "&a=" + month + "&b=" + day + "&c=" + year;
 	}
 
-	public boolean deleteFilteredFile(final boolean deleteFilteredData, final String filteredDataFolder, final UnitedFormatFilename filename) {
+	public boolean deleteFilteredFile(final boolean deleteFilteredData, final Path filteredDataFolder, final UnitedFormatFilename filename) {
 		if (deleteFilteredData) {
-			String filteredFilePath = UnitedFormatHelper.generatePath(filteredDataFolder, filename);
-			File filteredFile = new File(filteredFilePath);
+			File filteredFile = filteredDataFolder.resolve(filename.getFilename()).toFile();
 			if (filteredFile.exists()) {
 				filteredFile.delete();
 				return true;

@@ -1,6 +1,5 @@
 package stsc.yahoo.downloader;
 
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +48,7 @@ public final class YahooDownloadCourutine {
 		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
 		fillStockListFromBusinessIndexes(yahooStockNamesBuilder);
 		if (downloadExisted) {
-			yahooStockNameListGenerator.fillWithExistedFilesFromFolder(FileSystems.getDefault().getPath(settings.getDataFolder()), //
-					yahooStockNamesBuilder);
+			yahooStockNameListGenerator.fillWithExistedFilesFromFolder(settings.getDataFolder(), yahooStockNamesBuilder);
 		} else {
 			if (downloadByPattern) {
 				yahooStockNameListGenerator.fillWithBeginEndPatterns(startPattern, endPattern, yahooStockNamesBuilder);
