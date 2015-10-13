@@ -22,7 +22,7 @@ final class DownloadedStockFilter {
 	}
 
 	private static int processThreadSize = 8;
-	private static Logger logger = LogManager.getLogger("DownloadedStockFilter");
+	private static Logger logger = LogManager.getLogger(DownloadedStockFilter.class.getName());
 
 	private void readProperties() throws IOException {
 		FileInputStream in = new FileInputStream("./config/liquiditator.ini");
