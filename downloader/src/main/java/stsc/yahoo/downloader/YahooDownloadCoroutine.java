@@ -9,7 +9,13 @@ import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
 import stsc.yahoo.YahooStockNames;
 
-public final class YahooDownloadCourutine {
+/**
+ * This is an application coroutine (used at YahooDownloadService
+ * https://github.com/sidorovis/stsc.as.service.yahoo.downloader project). <br/>
+ * On {@link #start()} will choose necessary algorithm for download, create
+ * download queue and download stocks in separate threads.
+ */
+public final class YahooDownloadCoroutine {
 
 	private final DownloaderLogger logger;
 
@@ -27,7 +33,7 @@ public final class YahooDownloadCourutine {
 
 	private volatile boolean stopped = false;
 
-	public YahooDownloadCourutine(DownloaderLogger logger, boolean downloadExisted, YahooDatafeedSettings settings, boolean downloadByPattern, String startPattern,
+	public YahooDownloadCoroutine(DownloaderLogger logger, boolean downloadExisted, YahooDatafeedSettings settings, boolean downloadByPattern, String startPattern,
 			String endPattern, int stockNameMinLength, int stockNameMaxLength, int downloadThreadSize) {
 		this.logger = logger;
 		this.downloadExisted = downloadExisted;

@@ -16,14 +16,26 @@ import org.joda.time.LocalDate;
 import com.google.common.io.CharStreams;
 
 import stsc.common.Day;
+import stsc.common.stocks.Stock;
 import stsc.common.stocks.UnitedFormatFilename;
 import stsc.common.stocks.UnitedFormatStock;
 
+/**
+ * Bunch of methods to download / partially download Yahoo end-of-day stocks
+ * data from open API. Contents: 1. {@link #download(String)}; 2.
+ */
 public final class YahooDownloadHelper {
 
 	private static final int waitTriesAmount = 5;
 	private static final int waitTimeBetweenTries = 500;
 
+	/**
+	 * This method will download yahoo stock by instrument name using next link:
+	 * http://ichart.finance.yahoo.com/table.csv?s=<instrumentName>. <br/>
+	 * Will do {@link #waitTriesAmount} attempts with
+	 * {@link #waitTimeBetweenTries} sleep period between to not overload
+	 * service.
+	 */
 	public final Optional<UnitedFormatStock> download(final String instrumentName) throws InterruptedException {
 		int tries = 0;
 		String error = "";
@@ -47,6 +59,8 @@ public final class YahooDownloadHelper {
 
 	/**
 	 * !!! Be careful. This method changes {@link UnitedFormatStock} content.
+	 * This method will do {@link #waitTriesAmount} attempts with
+	 * {@link #waitTimeBetweenTries} sleep interval.
 	 * 
 	 * @param stock
 	 *            to partially download
@@ -103,6 +117,10 @@ public final class YahooDownloadHelper {
 		return "http://ichart.yahoo.com/table.csv?s=" + stock.getInstrumentName() + "&a=" + month + "&b=" + day + "&c=" + year;
 	}
 
+	/**
+	 * If first parameter is true and file exists will delete {@link Stock} file
+	 * from file system and return true, false otherwise.
+	 */
 	public boolean deleteFilteredFile(final boolean deleteFilteredData, final Path filteredDataFolder, final UnitedFormatFilename filename) {
 		if (deleteFilteredData) {
 			File filteredFile = filteredDataFolder.resolve(filename.getFilename()).toFile();

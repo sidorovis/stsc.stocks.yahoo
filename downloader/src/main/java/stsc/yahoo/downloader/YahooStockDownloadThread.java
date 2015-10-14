@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.common.service.statistics.StatisticType;
+import stsc.common.stocks.Stock;
 import stsc.common.stocks.UnitedFormatFilename;
 import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
@@ -14,7 +15,34 @@ import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;
 import stsc.yahoo.liquiditator.StockFilter;
 
-class YahooStockDownloadThread implements Runnable {
+/**
+ * {@link YahooStockDownloadThread} class implements download algorithm for
+ * yahoo end-of-day stock datafeed. <br/>
+ * 
+ * Could be started as one instance in many threads. <br/>
+ * 
+ * Algorithm details: <br/>
+ * 1. get next stock name from stock names queue (one for all threads); <br/>
+ * <br/>
+ * 2. {@link #downloadMarketDatafeedStock(String)} algorithm: ;<br/>
+ * 2.1. get {@link Stock} from file system. <br/>
+ * 2.2. if stock not exists on file system: <br>
+ * 2.2.1. download stock using {@link YahooDownloadHelper#download(String)};
+ * <br/>
+ * 2.2.3. store stock to the file system if the download was successful; <br/>
+ * 2.3. else {@link #partiallDownload(String, Optional)} and store downloaded
+ * stock to the file system; <br/>
+ * 2.4. {@link #processDownloadedStock(String, Optional)} <br/>
+ * 2.4.1. check liquidity and validity for stock and copy {@link Stock} file to
+ * filtered folder. <br/>
+ * 2.4.2. delete not liquid or not valid {@link Stock} from filtered datafeed
+ * folder. <br/>
+ * 3. {@link #increaseDownloadStatistics(String)} (log each {@link #printEach}
+ * download attempt;
+ * 
+ * @mark could be used into multi-thread environment (even as single object)
+ */
+final class YahooStockDownloadThread implements Runnable {
 
 	private static final int printEach = 100;
 
@@ -82,6 +110,7 @@ class YahooStockDownloadThread implements Runnable {
 	}
 
 	private void increaseDownloadStatistics(String filesystemStockName) {
+		// dirty hack, that helps to synchronize all threads
 		synchronized (settings) {
 			solvedAmount += 1;
 			if (solvedAmount % printEach == 0)
