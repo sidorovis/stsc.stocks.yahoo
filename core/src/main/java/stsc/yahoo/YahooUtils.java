@@ -19,7 +19,7 @@ public final class YahooUtils {
 		final File originalFile = dataFolder.resolve(filename.getFilename()).toFile();
 		final File filteredFile = filteredDataFolder.resolve(filename.getFilename()).toFile();
 		if (filteredFile.exists() && originalFile.exists() && filteredFile.length() == originalFile.length()) {
-			// filteter file exists and have the same size, so do nothing
+			// filter file exists and have the same size, so do nothing
 		} else
 			Files.copy(originalFile.toPath(), filteredFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}

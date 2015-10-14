@@ -15,12 +15,26 @@ import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;
 
-class FilterThread implements Runnable {
+/**
+ * {@link FilterThread} class is a part of {@link DownloadedStockFilter}
+ * application with next algorithm: <br/>
+ * 1. get stock name from the queue of stock names to process (until queue is
+ * not empty); <br/>
+ * 2. generate {@link UnitedFormatFilename} and read {@link Stock} from it;
+ * <br/>
+ * 3. if stock <br/>
+ * 3.1. is {@link StockFilter#isLiquid(Stock)} and
+ * {@link StockFilter#isValid(Stock)} then copy stock file to ./filtered_data/
+ * folder (if file already exists and differs by size - replace file); <br/>
+ * 3.2. else if file with the same filename exists at './filtered_data' folder,
+ * delete that file.
+ */
+final class FilterThread implements Runnable {
 
 	private final YahooDatafeedSettings settings;
 	private final YahooStockNames yahooStockNames;
 	private final StockFilter stockFilter;
-	private static Logger logger = LogManager.getLogger("FilterThread");
+	private final static Logger logger = LogManager.getLogger("FilterThread");
 
 	FilterThread(final YahooDatafeedSettings settings, final YahooStockNames yahooStockNames, final Date d) {
 		this.settings = settings;

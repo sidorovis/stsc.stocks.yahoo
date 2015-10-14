@@ -15,6 +15,23 @@ import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
 import stsc.yahoo.YahooStockNames;
 
+/**
+ * {@link DownloadedStockFilter} application filter already downloaded Yahoo
+ * end-of-day datafeed. <br/>
+ * Require configuration files: <br/>
+ * 1. ./config/log4j2.xml - log4j configuration file;<br/>
+ * 2. ./config/liquiditator.ini - configuration file for the application with
+ * next parameters:<br/>
+ * 2.1. thread.amount = 8 (by default), should be integer value. Regulates
+ * amount of threads that would be used for stock filtering.
+ * <hr/>
+ * <b>Execution instructions</b>. Should be started at the folder with Yahoo
+ * stock datafeed in it (./data/, ./filtered_data/).<br/>
+ * <b>Description.</b> {@link DownloadedStockFilter} algorithm: <br/>
+ * 1. Load stock names from datafeed './data/' folder. <br/>
+ * 2. Start thread.amount of {@link FilterThread} and {@link Thread#join()} for
+ * all of them.
+ */
 final class DownloadedStockFilter {
 
 	static {
@@ -22,16 +39,14 @@ final class DownloadedStockFilter {
 	}
 
 	private static int processThreadSize = 8;
-	private static Logger logger = LogManager.getLogger(DownloadedStockFilter.class.getName());
+	private final static Logger logger = LogManager.getLogger(DownloadedStockFilter.class.getName());
 
 	private void readProperties() throws IOException {
-		FileInputStream in = new FileInputStream("./config/liquiditator.ini");
-
-		Properties p = new Properties();
-		p.load(in);
-		in.close();
-
-		processThreadSize = Integer.parseInt(p.getProperty("thread.amount"));
+		try (FileInputStream in = new FileInputStream("./config/liquiditator.ini")) {
+			Properties p = new Properties();
+			p.load(in);
+			processThreadSize = Integer.parseInt(p.getProperty("thread.amount", "8"));
+		}
 	}
 
 	DownloadedStockFilter() throws IOException, InterruptedException {
@@ -44,12 +59,11 @@ final class DownloadedStockFilter {
 		final YahooStockNames yahooStockNames = yahooStockNamesBuilder.build();
 		logger.trace("collected stock names to start filter process: {}", yahooStockNames);
 
-		List<Thread> threads = new ArrayList<Thread>();
-
-		FilterThread filterThread = new FilterThread(settings, yahooStockNames);
+		final List<Thread> threads = new ArrayList<Thread>();
+		final FilterThread filterThread = new FilterThread(settings, yahooStockNames);
 
 		for (int i = 0; i < processThreadSize; ++i) {
-			Thread newThread = new Thread(filterThread);
+			final Thread newThread = new Thread(filterThread);
 			threads.add(newThread);
 			newThread.start();
 		}

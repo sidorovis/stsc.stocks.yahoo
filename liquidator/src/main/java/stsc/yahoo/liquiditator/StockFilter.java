@@ -115,10 +115,8 @@ public final class StockFilter {
 		final float averagePercentDaysPerSeveralYear = (float) realDaysForTenYears / expectedDaysForLast10Year;
 
 		if (averagePercentDaysPerSeveralYear < minimalDaysPercentPerLastSeveralYears) {
-			logger.debug(
-					"stock " + s.getInstrumentName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount + " years, thats not enought");
-			errors += "stock " + s.getInstrumentName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount
-					+ " years, thats not enought\n";
+			logger.debug("stock " + s.getInstrumentName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount + " years, thats not enought");
+			errors += "stock " + s.getInstrumentName() + " have only " + realDaysForTenYears + " days per last " + lastYearsAmount + " years, thats not enought\n";
 		}
 		return errors;
 	}
