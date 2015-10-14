@@ -13,13 +13,12 @@ import stsc.common.stocks.UnitedFormatStock;
 /**
  * In fact pair of datafeed paths to the yahoo datafeed. <br/>
  * Common data path (with all possible stocks) and filtered data path (only
- * liquid stocks). <br/>
- * TODO please change {@link String} folder storage to {@link Path}.
+ * liquid stocks).
  */
 public final class YahooDatafeedSettings {
 
-	public static final String DATA_FOLDER = "./data/";
-	public static final String FILTER_DATA_FOLDER = "./filtered_data/";
+	public static final String DATA_FOLDER = "data";
+	public static final String FILTER_DATA_FOLDER = "filtered_data";
 
 	private final Path dataFolder;
 	private final Path filteredDataFolder;

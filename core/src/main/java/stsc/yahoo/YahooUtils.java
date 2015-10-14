@@ -9,12 +9,17 @@ import java.nio.file.StandardCopyOption;
 import stsc.common.stocks.UnitedFormatFilename;
 import stsc.common.stocks.UnitedFormatHelper;
 
+/**
+ * This class store helper methods for controlling yahoo datafeed. <br/>
+ * It very close to FileUtils like helpers, but store small stsc related
+ * knowledge about how Yahoo filesystem datafeed stored.
+ */
 public final class YahooUtils {
 
 	private YahooUtils() {
 	}
 
-	public static void copyFilteredStockFile(Path dataFolder, Path filteredDataFolder, String instrumentName) throws IOException {
+	public static void copyFilteredStockFile(final Path dataFolder, final Path filteredDataFolder, final String instrumentName) throws IOException {
 		final UnitedFormatFilename filename = UnitedFormatHelper.toFilesystem(instrumentName);
 		final File originalFile = dataFolder.resolve(filename.getFilename()).toFile();
 		final File filteredFile = filteredDataFolder.resolve(filename.getFilename()).toFile();

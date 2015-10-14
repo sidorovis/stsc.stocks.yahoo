@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import stsc.common.stocks.UnitedFormatHelper;
 
-public class YahooFilesystemDatafeedSettingsTest {
+public class YahooDatafeedSettingsTest {
 
 	private YahooDatafeedSettings createSettings() throws IOException {
 		final Path thisPath = FileSystems.getDefault().getPath("./");

@@ -20,7 +20,7 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 		System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "./config/log4j2.xml");
 	}
 
-	private static Logger logger = LogManager.getLogger("YahooFileStorage");
+	private static Logger logger = LogManager.getLogger(YahooFileStockStorage.class.getName());
 
 	private final YahooDatafeedSettings settings;
 	private YahooStockNames yahooStockNames = new YahooStockNames.Builder().build();

@@ -1,6 +1,20 @@
 package stsc.yahoo;
 
+/**
+ * {@link String} utils that I believe was written billion times before, but I
+ * failed to find them, may be because leak of knowledge. Anyway currently it
+ * only two methods that are not very complicated to read and they have tests so
+ * it is pretty good.
+ */
 public final class StringUtils {
+
+	/**
+	 * Not real {@link String} comparator. Compare length of the strings only.
+	 * 
+	 * @return integer value (if left value length is bigger then right value
+	 *         length, return difference; otherwise return
+	 *         {@link String#compareTo(String)}.
+	 */
 	public static int comparePatterns(String l, String r) {
 		if (l.length() > r.length())
 			return l.length() - r.length();
@@ -8,6 +22,16 @@ public final class StringUtils {
 		return l.compareTo(r);
 	}
 
+	/**
+	 * Create next permutation based on provided. a -> b <br/>
+	 * z -> aa <br/>
+	 * aa -> ab <br/>
+	 * az -> ba <br/>
+	 * bz -> ca <br/>
+	 * zz -> aaa <br/>
+	 * 
+	 * @return next permutation.
+	 */
 	public static String nextPermutation(String f) {
 		boolean onlyZ = true;
 		for (int i = 0; i < f.length(); ++i)
