@@ -72,7 +72,7 @@ public final class YahooStockNameListGenerator {
 		Arrays.sort(listOfFiles, new FileComparator());
 		for (File file : listOfFiles) {
 			final String filename = file.getName();
-			if (file.isFile() && filename.startsWith("_") && filename.endsWith(UnitedFormatHelper.getExtension())) {
+			if (file.isFile() && filename.startsWith(UnitedFormatHelper.getPrefix()) && filename.endsWith(UnitedFormatHelper.getExtension())) {
 				t.add(filename.substring(1, filename.length() - UnitedFormatHelper.getExtension().length()));
 			}
 		}
