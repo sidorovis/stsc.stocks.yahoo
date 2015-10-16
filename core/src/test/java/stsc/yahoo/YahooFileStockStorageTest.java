@@ -22,8 +22,7 @@ public class YahooFileStockStorageTest {
 	private static synchronized StockStorage getStockStorage() throws ClassNotFoundException, IOException, InterruptedException, URISyntaxException {
 		if (stockStorage == null) {
 			final YahooFileStockStorage ss = new YahooFileStockStorage(new YahooDatafeedSettings(resourceToPath("./"), resourceToPath("./")), true);
-			ss.waitForLoad();
-			stockStorage = ss;
+			stockStorage = ss.waitForBackgroundProcess();
 		}
 		return stockStorage;
 	}

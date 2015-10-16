@@ -11,10 +11,11 @@ import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
 import stsc.common.stocks.Stock;
 import stsc.common.stocks.StockLock;
+import stsc.common.system.BackgroundProcess;
 import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.storage.ThreadSafeStockStorage;
 
-public final class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver {
+public final class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver, BackgroundProcess<YahooFileStockStorage> {
 
 	static {
 		System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "./config/log4j2.xml");
@@ -39,6 +40,29 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 		receivers.add(receiver);
 	}
 
+	@Override
+	public void startInBackground() {
+		loadStocks();
+	}
+
+	@Override
+	public YahooFileStockStorage waitForBackgroundProcess() throws InterruptedException {
+		for (Thread thread : threads) {
+			thread.join();
+		}
+		return this;
+	}
+
+	@Override
+	public void stopBackgroundProcess() {
+		yahooStockNames.clear();
+	}
+
+	@Override
+	public void newStock(Stock newStock) {
+		datafeed.put(newStock.getInstrumentName(), new StockLock(newStock));
+	}
+
 	private void loadStocksFromFileSystem(final boolean autoStart) throws ClassNotFoundException, IOException {
 		logger.trace("created");
 		this.yahooStockNames = loadFilteredDatafeed();
@@ -54,7 +78,7 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 		return yahooStockNamesBuilder.build();
 	}
 
-	private void loadStocks() throws ClassNotFoundException, IOException {
+	private void loadStocks() {
 		logger.info("stocks load was initiated");
 		final StockReadThread stockReadThread = new StockReadThread(settings, yahooStockNames);
 		stockReadThread.addReceiver(this);
@@ -67,19 +91,4 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 		}
 	}
 
-	public void stopLoadStocks() {
-		yahooStockNames.clear();
-	}
-
-	public YahooFileStockStorage waitForLoad() throws InterruptedException {
-		for (Thread thread : threads) {
-			thread.join();
-		}
-		return this;
-	}
-
-	@Override
-	public void newStock(Stock newStock) {
-		datafeed.put(newStock.getInstrumentName(), new StockLock(newStock));
-	}
 }
