@@ -33,7 +33,6 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 		super();
 		this.settings = settings;
 		loadStocksFromFileSystem(autoStart);
-
 	}
 
 	public void addReceiver(LoadStockReceiver receiver) {
@@ -51,6 +50,11 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 			thread.join();
 		}
 		return this;
+	}
+
+	@Override
+	public int amountToProcess() {
+		return yahooStockNames.size();
 	}
 
 	@Override
