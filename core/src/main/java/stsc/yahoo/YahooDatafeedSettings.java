@@ -29,7 +29,11 @@ public final class YahooDatafeedSettings {
 	 * @throws IOException
 	 */
 	public YahooDatafeedSettings() throws IOException {
-		this(Paths.get("./").resolve(DATA_FOLDER), Paths.get("./").resolve(FILTER_DATA_FOLDER));
+		this(Paths.get("./"));
+	}
+
+	public YahooDatafeedSettings(final Path path) throws IOException {
+		this(path.resolve(DATA_FOLDER), path.resolve(FILTER_DATA_FOLDER));
 	}
 
 	public YahooDatafeedSettings(final Path dataFolder, final Path filteredDataFolder) throws IOException {
