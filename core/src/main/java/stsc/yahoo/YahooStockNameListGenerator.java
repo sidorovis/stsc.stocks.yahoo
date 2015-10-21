@@ -31,11 +31,7 @@ import stsc.stocks.repo.MetaIndicesRepository;
  */
 public final class YahooStockNameListGenerator {
 
-	private final MetaIndicesRepository metaIndicesRepository;
-
-	public YahooStockNameListGenerator(final MetaIndicesRepository metaIndicesRepository) {
-		this.metaIndicesRepository = metaIndicesRepository;
-
+	public YahooStockNameListGenerator() {
 	}
 
 	/**
@@ -44,7 +40,7 @@ public final class YahooStockNameListGenerator {
 	 * @param collection
 	 *            to fill
 	 */
-	public YahooStockNames.Builder fillWithIndexesFromBase(final YahooStockNames.Builder stockNames) {
+	public YahooStockNames.Builder fillWithIndexesFromBase(final MetaIndicesRepository metaIndicesRepository, final YahooStockNames.Builder stockNames) {
 		addAll(metaIndicesRepository.getCountryMarketIndices(), stockNames);
 		addAll(metaIndicesRepository.getGlobalMarketIndices(), stockNames);
 		addAll(metaIndicesRepository.getRegionMarketIndices(), stockNames);

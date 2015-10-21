@@ -13,7 +13,6 @@ import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 import stsc.common.stocks.Stock;
 import stsc.common.stocks.StockLock;
 import stsc.common.system.BackgroundProcess;
-import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.storage.ThreadSafeStockStorage;
 
 public final class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver, BackgroundProcess<YahooFileStockStorage, String> {
@@ -87,7 +86,7 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 
 	private YahooStockNames loadFilteredDatafeed() {
 		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
-		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(settings.getFilteredDataFolder(), yahooStockNamesBuilder);
+		new YahooStockNameListGenerator().fillWithExistedFilesFromFolder(settings.getFilteredDataFolder(), yahooStockNamesBuilder);
 		return yahooStockNamesBuilder.build();
 	}
 
