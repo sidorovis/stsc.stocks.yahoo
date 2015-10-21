@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
-import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNameListGenerator;
 import stsc.yahoo.YahooStockNames;
@@ -55,7 +54,7 @@ final class DownloadedStockFilter {
 		logger.trace("downloaded stock filter started");
 		final YahooDatafeedSettings settings = new YahooDatafeedSettings();
 		final YahooStockNames.Builder yahooStockNamesBuilder = new YahooStockNames.Builder();
-		new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl()).fillWithExistedFilesFromFolder(settings.getDataFolder(), yahooStockNamesBuilder);
+		new YahooStockNameListGenerator().fillWithExistedFilesFromFolder(settings.getDataFolder(), yahooStockNamesBuilder);
 		final YahooStockNames yahooStockNames = yahooStockNamesBuilder.build();
 		logger.trace("collected stock names to start filter process: {}", yahooStockNames);
 

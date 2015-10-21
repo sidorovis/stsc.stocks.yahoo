@@ -44,7 +44,7 @@ public final class YahooDownloadCoroutine {
 		this.stockNameMinLength = stockNameMinLength;
 		this.stockNameMaxLength = stockNameMaxLength;
 		this.downloadThreadSize = downloadThreadSize;
-		this.yahooStockNameListGenerator = new YahooStockNameListGenerator(new MetaIndicesRepositoryIncodeImpl());
+		this.yahooStockNameListGenerator = new YahooStockNameListGenerator();
 
 		downloadThread = new YahooStockDownloadThread(logger, settings, new YahooStockNames.Builder().build());
 	}
@@ -85,7 +85,7 @@ public final class YahooDownloadCoroutine {
 	}
 
 	private void fillStockListFromBusinessIndexes(final YahooStockNames.Builder builder) {
-		yahooStockNameListGenerator.fillWithIndexesFromBase(builder);
+		yahooStockNameListGenerator.fillWithIndexesFromBase(new MetaIndicesRepositoryIncodeImpl(), builder);
 	}
 
 	public void stop() throws Exception {
