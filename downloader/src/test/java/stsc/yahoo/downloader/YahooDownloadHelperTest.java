@@ -1,16 +1,22 @@
 package stsc.yahoo.downloader;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import stsc.common.Day;
 import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 
@@ -27,6 +33,27 @@ public class YahooDownloadHelperTest {
 	public void testDownload() throws InterruptedException {
 		final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
 		Assert.assertTrue(yahooDownloadHelper.download("aapl").isPresent());
+	}
+
+	@Test
+	public void testDownloadAdm() throws InterruptedException, IOException {
+		final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
+		final UnitedFormatStock downloadedStock = yahooDownloadHelper.download("adm").get();
+		final ArrayList<Day> days = downloadedStock.getDays();
+		downloadedStock.storeUniteFormatToFolder(testFolder.getRoot().toPath());
+		try (InputStream is = new FileInputStream((testFolder.getRoot().toPath().resolve(UnitedFormatHelper.toFilesystem("adm").getFilename()).toFile()))) {
+			final UnitedFormatStock stock = UnitedFormatStock.readFromUniteFormatFile(is);
+			for (Day d : stock.getDays()) {
+				final LocalDate date = d.getDate().toInstant().atZone(ZoneOffset.UTC).toLocalDate();
+				Assert.assertTrue(date.getYear() > 1800);
+				Assert.assertTrue(date.getYear() < 2200);
+			}
+		}
+		for (Day d : days) {
+			final LocalDate date = d.getDate().toInstant().atZone(ZoneOffset.UTC).toLocalDate();
+			Assert.assertTrue(date.getYear() > 1800);
+			Assert.assertTrue(date.getYear() < 2200);
+		}
 	}
 
 	@Test
