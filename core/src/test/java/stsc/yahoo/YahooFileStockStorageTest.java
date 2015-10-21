@@ -15,11 +15,11 @@ public class YahooFileStockStorageTest {
 
 	private static StockStorage stockStorage = null;
 
-	final static private Path resourceToPath(final String resourcePath) throws URISyntaxException {
+	private final static Path resourceToPath(final String resourcePath) throws URISyntaxException {
 		return FileSystems.getDefault().getPath(new File(YahooFileStockStorageTest.class.getResource(resourcePath).toURI()).getAbsolutePath());
 	}
 
-	private static synchronized StockStorage getStockStorage() throws ClassNotFoundException, IOException, InterruptedException, URISyntaxException {
+	private final static synchronized StockStorage getStockStorage() throws IOException, InterruptedException, URISyntaxException {
 		if (stockStorage == null) {
 			final YahooFileStockStorage ss = new YahooFileStockStorage(new YahooDatafeedSettings(resourceToPath("./"), resourceToPath("./")), true);
 			stockStorage = ss.waitForBackgroundProcess();
@@ -44,5 +44,14 @@ public class YahooFileStockStorageTest {
 		Assert.assertNotNull(stockStorage.getStock("aaae"));
 		Assert.assertNotNull(stockStorage.getStock("aapl"));
 		Assert.assertFalse(stockStorage.getStock("noexistsstock").isPresent());
+	}
+
+	@Test
+	public void testYahooFileStockStorageRemoveIf() throws IOException, URISyntaxException {
+		final YahooFileStockStorage ss = new YahooFileStockStorage(new YahooDatafeedSettings(resourceToPath("./"), resourceToPath("./")), false);
+		Assert.assertEquals(1, ss.removeIf(p -> {
+			return p.startsWith("aaa");
+		}));
+		Assert.assertEquals(3, ss.amountToProcess());
 	}
 }

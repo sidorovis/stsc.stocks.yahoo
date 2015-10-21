@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,7 @@ import stsc.common.system.BackgroundProcess;
 import stsc.stocks.repo.MetaIndicesRepositoryIncodeImpl;
 import stsc.storage.ThreadSafeStockStorage;
 
-public final class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver, BackgroundProcess<YahooFileStockStorage> {
+public final class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver, BackgroundProcess<YahooFileStockStorage, String> {
 
 	static {
 		System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "./config/log4j2.xml");
@@ -29,7 +30,7 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 	private final List<Thread> threads = new ArrayList<Thread>();
 	private final List<LoadStockReceiver> receivers = Collections.synchronizedList(new ArrayList<LoadStockReceiver>());
 
-	public YahooFileStockStorage(final YahooDatafeedSettings settings, boolean autoStart) throws ClassNotFoundException, IOException {
+	public YahooFileStockStorage(final YahooDatafeedSettings settings, boolean autoStart) throws IOException {
 		super();
 		this.settings = settings;
 		loadStocksFromFileSystem(autoStart);
@@ -37,6 +38,14 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 
 	public void addReceiver(LoadStockReceiver receiver) {
 		receivers.add(receiver);
+	}
+
+	/**
+	 * It's better to use it before load background process was started.
+	 */
+	@Override
+	public int removeIf(final Predicate<String> filter) {
+		return yahooStockNames.removeIf(filter);
 	}
 
 	@Override
@@ -67,7 +76,7 @@ public final class YahooFileStockStorage extends ThreadSafeStockStorage implemen
 		datafeed.put(newStock.getInstrumentName(), new StockLock(newStock));
 	}
 
-	private void loadStocksFromFileSystem(final boolean autoStart) throws ClassNotFoundException, IOException {
+	private void loadStocksFromFileSystem(final boolean autoStart) throws IOException {
 		logger.trace("created");
 		this.yahooStockNames = loadFilteredDatafeed();
 		logger.info("filtered datafeed header readed: {} stocks", yahooStockNames.size());

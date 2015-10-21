@@ -17,4 +17,20 @@ public class YahooStockNamesTest {
 		Assert.assertEquals(yahooStockNames.getNextStockName(), null);
 	}
 
+	@Test
+	public void testYahooStockNamesRemoveIf() {
+		final YahooStockNames yahooStockNames = new YahooStockNames.Builder(). //
+				add("abc"). //
+				add("bbc"). //
+				add("dbc"). //
+				add("cac"). //
+				add("tbc"). //
+				add("obc"). //
+				build();
+		final int deletedElementsSize = yahooStockNames.removeIf(p -> {
+			return p.startsWith("a") || p.contains("bc");
+		});
+		Assert.assertEquals(5, deletedElementsSize);
+		Assert.assertEquals(1, yahooStockNames.size());
+	}
 }
