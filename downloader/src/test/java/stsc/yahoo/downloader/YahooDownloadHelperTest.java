@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.sql.Date;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -17,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import stsc.common.Day;
+import stsc.common.stocks.Stock;
 import stsc.common.stocks.UnitedFormatHelper;
 import stsc.common.stocks.UnitedFormatStock;
 
@@ -30,9 +34,14 @@ public class YahooDownloadHelperTest {
 	}
 
 	@Test
-	public void testDownload() throws InterruptedException {
+	public void testDownloadWithWeekendTest() throws InterruptedException {
 		final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
-		Assert.assertTrue(yahooDownloadHelper.download("aapl").isPresent());
+		final Optional<UnitedFormatStock> downloadedAapl = yahooDownloadHelper.download("aapl");
+		Assert.assertTrue(downloadedAapl.isPresent());
+		final Stock aapl = downloadedAapl.get();
+		final int index = aapl.findDayIndex(Date.from(LocalDate.of(2013, 9, 8).atStartOfDay().toInstant(ZoneOffset.UTC)));
+		final LocalDate localDate = LocalDateTime.ofInstant(aapl.getDays().get(index).getDate().toInstant(), ZoneOffset.UTC).toLocalDate();
+		Assert.assertEquals(9, localDate.getDayOfMonth());
 	}
 
 	@Test
@@ -69,7 +78,8 @@ public class YahooDownloadHelperTest {
 	public void testDeleteFilteredFile() throws IOException {
 		final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
 		new File(Paths.get(testFolder.getRoot().getAbsolutePath()).resolve("yahooDeleteTest").toString()).createNewFile();
-		yahooDownloadHelper.deleteFilteredFile(true, Paths.get(testFolder.getRoot().getAbsolutePath()), UnitedFormatHelper.filesystemToFilesystem("yahooDeleteTest"));
+		yahooDownloadHelper.deleteFilteredFile(true, Paths.get(testFolder.getRoot().getAbsolutePath()),
+				UnitedFormatHelper.filesystemToFilesystem("yahooDeleteTest"));
 		Assert.assertFalse(new File(Paths.get(testFolder.getRoot().getAbsolutePath()).resolve("yahooDeleteTest").toString()).exists());
 	}
 
