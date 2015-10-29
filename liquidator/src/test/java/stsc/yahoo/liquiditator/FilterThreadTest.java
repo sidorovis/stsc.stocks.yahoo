@@ -12,7 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import stsc.common.stocks.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
 

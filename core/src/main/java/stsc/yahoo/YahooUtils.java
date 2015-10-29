@@ -6,8 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import stsc.common.stocks.UnitedFormatFilename;
-import stsc.common.stocks.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatFilename;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
 
 /**
  * This class store helper methods for controlling yahoo datafeed. <br/>

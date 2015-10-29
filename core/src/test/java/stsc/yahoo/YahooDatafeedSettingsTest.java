@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import org.junit.Assert;
 import org.junit.Test;
 
-import stsc.common.stocks.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
 
 public class YahooDatafeedSettingsTest {
 

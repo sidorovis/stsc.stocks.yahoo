@@ -17,8 +17,8 @@ import com.google.common.io.CharStreams;
 
 import stsc.common.Day;
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.UnitedFormatFilename;
-import stsc.common.stocks.UnitedFormatStock;
+import stsc.common.stocks.united.format.UnitedFormatFilename;
+import stsc.common.stocks.united.format.UnitedFormatStock;
 
 /**
  * Bunch of methods to download / partially download Yahoo end-of-day stocks

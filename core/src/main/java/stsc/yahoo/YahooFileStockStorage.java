@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
 
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.StockLock;
 import stsc.common.system.BackgroundProcess;
+import stsc.storage.StockLock;
 import stsc.storage.ThreadSafeStockStorage;
 
 public final class YahooFileStockStorage extends ThreadSafeStockStorage implements LoadStockReceiver, BackgroundProcess<YahooFileStockStorage, String> {

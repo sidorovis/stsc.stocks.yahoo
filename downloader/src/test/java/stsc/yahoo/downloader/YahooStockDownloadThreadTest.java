@@ -16,7 +16,7 @@ import com.google.common.io.Files;
 
 import stsc.common.service.statistics.DownloaderLogger;
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
 

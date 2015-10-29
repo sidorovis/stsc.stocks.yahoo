@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.google.common.collect.Lists;
 
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
 
 /**
  * {@link StockReadThread} is a part of {@link YahooFileStockStorage}.

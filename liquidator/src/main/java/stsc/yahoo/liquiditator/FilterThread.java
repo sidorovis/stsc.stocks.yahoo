@@ -9,8 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.UnitedFormatFilename;
-import stsc.common.stocks.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatFilename;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
 import stsc.yahoo.YahooDatafeedSettings;
 import stsc.yahoo.YahooStockNames;
 import stsc.yahoo.YahooUtils;

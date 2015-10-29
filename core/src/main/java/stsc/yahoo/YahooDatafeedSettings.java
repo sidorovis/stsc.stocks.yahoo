@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-import stsc.common.stocks.UnitedFormatFilename;
-import stsc.common.stocks.UnitedFormatStock;
+import stsc.common.stocks.united.format.UnitedFormatFilename;
+import stsc.common.stocks.united.format.UnitedFormatStock;
 
 /**
  * In fact pair of datafeed paths to the yahoo datafeed. <br/>

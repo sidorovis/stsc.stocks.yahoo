@@ -21,8 +21,8 @@ import org.junit.rules.TemporaryFolder;
 
 import stsc.common.Day;
 import stsc.common.stocks.Stock;
-import stsc.common.stocks.UnitedFormatHelper;
-import stsc.common.stocks.UnitedFormatStock;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatStock;
 
 public class YahooDownloadHelperTest {
 

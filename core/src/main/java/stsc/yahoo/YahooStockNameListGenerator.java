@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import stsc.common.stocks.UnitedFormatHelper;
-import stsc.common.stocks.UnitedFormatStock;
+import stsc.common.stocks.united.format.UnitedFormatHelper;
+import stsc.common.stocks.united.format.UnitedFormatStock;
 import stsc.stocks.indexes.MarketIndex;
 import stsc.stocks.repo.MetaIndicesRepository;
 
