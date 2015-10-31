@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.text.ParseException;
@@ -24,7 +25,7 @@ import stsc.common.stocks.Stock;
 import stsc.common.stocks.united.format.UnitedFormatHelper;
 import stsc.common.stocks.united.format.UnitedFormatStock;
 
-public class YahooDownloadHelperTest {
+public final class YahooDownloadHelperTest {
 
 	@Rule
 	public TemporaryFolder testFolder = new TemporaryFolder();
@@ -77,10 +78,11 @@ public class YahooDownloadHelperTest {
 	@Test
 	public void testDeleteFilteredFile() throws IOException {
 		final YahooDownloadHelper yahooDownloadHelper = new YahooDownloadHelper();
-		new File(Paths.get(testFolder.getRoot().getAbsolutePath()).resolve("yahooDeleteTest").toString()).createNewFile();
+		final Path getYahooDeletePath = Paths.get(testFolder.getRoot().getAbsolutePath()).resolve("yahooDeleteTest");
+		new File(getYahooDeletePath.toString()).createNewFile();
 		yahooDownloadHelper.deleteFilteredFile(true, Paths.get(testFolder.getRoot().getAbsolutePath()),
 				UnitedFormatHelper.filesystemToFilesystem("yahooDeleteTest"));
-		Assert.assertFalse(new File(Paths.get(testFolder.getRoot().getAbsolutePath()).resolve("yahooDeleteTest").toString()).exists());
+		Assert.assertFalse(new File(getYahooDeletePath.toString()).exists());
 	}
 
 }
